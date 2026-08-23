@@ -1,9 +1,14 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 from __future__ import annotations
 
+import io
+import urllib.error
+import urllib.request
 from pathlib import Path
 
 import pytest
+
+from core import update_fetch
 
 from core import (
     batchutil,
@@ -44,6 +49,12 @@ def test_update_urls_allow_our_github_only() -> None:
         updater._require_allowed_url(ok_cdn, kind="download")
     assert updater._require_allowed_url(updater.NATIVE_RELEASES_API, kind="api") == updater.NATIVE_RELEASES_API
     assert updater._require_allowed_url(updater.FLATPAK_RELEASES_API, kind="api") == updater.FLATPAK_RELEASES_API
+    latest = updater.FLATPAK_RELEASES_LATEST_API
+    assert latest.endswith("/releases/latest")
+    assert updater._require_allowed_url(latest, kind="api") == latest
+    compact = updater.FLATPAK_RELEASES_LIST_API
+    assert "per_page=" in compact
+    assert updater._require_allowed_url(compact, kind="api") == compact
 
 
 @pytest.mark.parametrize(
@@ -733,6 +744,87 @@ def test_update_dialog_splits_commands_from_body() -> None:
     assert "curl -fL" not in body
     assert "flatpak install" not in body
     assert "Notes release." in body
+
+
+def _util_release_item(version: str) -> dict:
+    return {
+        "tag_name": f"v{version}",
+        "name": f"v{version}",
+        "draft": False,
+        "prerelease": False,
+        "html_url": f"https://github.com/Mr-Aurevo-X/Hub-Utilitaires-Linux/releases/tag/v{version}",
+        "body": "notes",
+        "assets": [
+            {
+                "name": "org.mraurevox.HubUtilitaires.flatpak",
+                "browser_download_url": (
+                    "https://github.com/Mr-Aurevo-X/Hub-Utilitaires-Linux/releases/download/"
+                    f"v{version}/org.mraurevox.HubUtilitaires.flatpak"
+                ),
+            }
+        ],
+    }
+
+
+def test_check_for_update_uses_latest_endpoint(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(update_fetch, "local_version", lambda: "1.1.2")
+    calls: list[str] = []
+
+    def fake_http(url: str, timeout: float = 15.0) -> object:
+        calls.append(url)
+        return _util_release_item("1.1.4")
+
+    monkeypatch.setattr(update_fetch, "_http_json", fake_http)
+    found = updater.check_for_update()
+    assert found is not None
+    assert found["version"] == "1.1.4"
+    assert calls[0] == updater.FLATPAK_RELEASES_LATEST_API
+
+
+def test_check_for_update_falls_back_after_latest_504(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(update_fetch, "local_version", lambda: "1.1.2")
+    calls: list[str] = []
+
+    def fake_http(url: str, timeout: float = 15.0) -> object:
+        calls.append(url)
+        if url.endswith("/latest"):
+            raise urllib.error.HTTPError(url, 504, "Gateway Time-out", hdrs=None, fp=io.BytesIO())
+        return [_util_release_item("1.1.4")]
+
+    monkeypatch.setattr(update_fetch, "_http_json", fake_http)
+    found = updater.check_for_update()
+    assert found is not None
+    assert found["version"] == "1.1.4"
+    assert calls[0] == updater.FLATPAK_RELEASES_LATEST_API
+    assert updater.FLATPAK_RELEASES_LIST_API in calls
+
+
+def test_http_json_retries_gateway_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
+    class FakeResp:
+        def read(self, _n: int) -> bytes:
+            return b'{"ok":true}'
+
+        def __enter__(self) -> FakeResp:
+            return self
+
+        def __exit__(self, *_a: object) -> bool:
+            return False
+
+    attempts = {"n": 0}
+
+    class FakeOpener:
+        def open(self, req: urllib.request.Request, timeout: float = 15.0) -> FakeResp:
+            attempts["n"] += 1
+            if attempts["n"] < 3:
+                raise urllib.error.HTTPError(
+                    req.full_url, 504, "Gateway Time-out", hdrs=None, fp=io.BytesIO()
+                )
+            return FakeResp()
+
+    monkeypatch.setattr(update_fetch, "_opener", lambda: FakeOpener())
+    monkeypatch.setattr(update_fetch.time, "sleep", lambda _s: None)
+    assert update_fetch._http_json(updater.FLATPAK_RELEASES_LATEST_API) == {"ok": True}
+    assert attempts["n"] == 3
 
 
 def test_nav_registry_covers_all_pages() -> None:

@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import logging
+import time
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -18,17 +19,22 @@ from core.update_url import (
     FLATPAK_DIRECT,
     FLATPAK_PUBLIC_RELEASES,
     FLATPAK_RELEASES_API,
+    FLATPAK_RELEASES_LATEST_API,
+    FLATPAK_RELEASES_LIST_API,
     SHORTCUT_ASSET,
     SHORTCUT_DIRECT,
     NATIVE_ASSET_TMPL,
     NATIVE_DIRECT,
     NATIVE_PUBLIC_RELEASES,
     NATIVE_RELEASES_API,
+    NATIVE_RELEASES_LATEST_API,
+    NATIVE_RELEASES_LIST_API,
     TAG_PREFIX,
     UpdateError,
     _MAX_BUNDLE_BYTES,
     _MAX_JSON_BYTES,
     _NOTES_MAX,
+    _TRANSIENT_HTTP,
     _opener,
     _require_allowed_url,
     parse_semver,
@@ -146,11 +152,31 @@ def _http_json(url: str, timeout: float = 15.0) -> Any:
             "Accept": "application/vnd.github+json",
         },
     )
-    with _opener().open(req, timeout=timeout) as resp:
-        raw = resp.read(_MAX_JSON_BYTES + 1)
-    if len(raw) > _MAX_JSON_BYTES:
-        raise UpdateError("Réponse de mise à jour trop volumineuse")
-    return json.loads(raw.decode("utf-8"))
+    last_error: BaseException | None = None
+    for attempt in range(3):
+        try:
+            with _opener().open(req, timeout=timeout) as resp:
+                raw = resp.read(_MAX_JSON_BYTES + 1)
+        except urllib.error.HTTPError as exc:
+            last_error = exc
+            if exc.code in _TRANSIENT_HTTP and attempt < 2:
+                time.sleep(0.4 * (attempt + 1))
+                continue
+            raise
+        if len(raw) > _MAX_JSON_BYTES:
+            raise UpdateError("Réponse de mise à jour trop volumineuse")
+        return json.loads(raw.decode("utf-8"))
+    if last_error is None:
+        raise UpdateError("Canal de mises à jour indisponible")
+    raise last_error
+
+
+def _as_release_list(payload: Any) -> list[Any]:
+    if isinstance(payload, list):
+        return payload
+    if isinstance(payload, dict):
+        return [payload]
+    return []
 
 
 def _snippet(body: str | None) -> str:
@@ -188,27 +214,46 @@ def _asset_url(item: dict[str, Any], version: str, channel: Channel) -> str:
 def check_for_update(*, raise_on_error: bool = False) -> dict[str, Any] | None:
     """Return latest newer Hub Utilitaires release for the active channel, or None."""
     channel = update_channel()
-    api = FLATPAK_RELEASES_API if channel == "flatpak" else NATIVE_RELEASES_API
-    public = FLATPAK_PUBLIC_RELEASES if channel == "flatpak" else NATIVE_PUBLIC_RELEASES
-    try:
-        payload = _http_json(api)
-    except urllib.error.HTTPError as exc:
-        log.info("update check skipped (HTTP %s, channel=%s)", exc.code, channel)
+    if channel == "flatpak":
+        apis = (FLATPAK_RELEASES_LATEST_API, FLATPAK_RELEASES_LIST_API)
+        public = FLATPAK_PUBLIC_RELEASES
+    else:
+        apis = (NATIVE_RELEASES_LATEST_API, NATIVE_RELEASES_LIST_API)
+        public = NATIVE_PUBLIC_RELEASES
+    payload: Any = None
+    last_http: urllib.error.HTTPError | None = None
+    for api in apis:
+        try:
+            payload = _http_json(api)
+            break
+        except urllib.error.HTTPError as exc:
+            last_http = exc
+            log.info("update check skipped (HTTP %s, channel=%s, url=%s)", exc.code, channel, api)
+            if exc.code in _TRANSIENT_HTTP:
+                continue
+            if raise_on_error:
+                raise UpdateError(f"HTTP {exc.code}") from exc
+            return None
+        except UpdateError:
+            if raise_on_error:
+                raise
+            log.info("update check skipped (url refusée, channel=%s)", channel)
+            return None
+        except (urllib.error.URLError, TimeoutError, json.JSONDecodeError, OSError, ValueError) as exc:
+            log.info("update check skipped (%s, channel=%s)", exc, channel)
+            if raise_on_error:
+                raise UpdateError(str(exc)) from exc
+            return None
+
+    if payload is None:
         if raise_on_error:
-            raise UpdateError(f"HTTP {exc.code}") from exc
-        return None
-    except UpdateError:
-        if raise_on_error:
-            raise
-        log.info("update check skipped (url refusée, channel=%s)", channel)
-        return None
-    except (urllib.error.URLError, TimeoutError, json.JSONDecodeError, OSError, ValueError) as exc:
-        log.info("update check skipped (%s, channel=%s)", exc, channel)
-        if raise_on_error:
-            raise UpdateError(str(exc)) from exc
+            if last_http is not None:
+                raise UpdateError(f"HTTP {last_http.code}") from last_http
+            raise UpdateError("Canal de mises à jour indisponible")
         return None
 
-    if not isinstance(payload, list):
+    items = _as_release_list(payload)
+    if not items:
         if raise_on_error:
             raise UpdateError("Réponse invalide du canal de mises à jour")
         return None
@@ -218,7 +263,7 @@ def check_for_update(*, raise_on_error: bool = False) -> dict[str, Any] | None:
     best: dict[str, Any] | None = None
     best_tuple = current_tuple
 
-    for item in payload:
+    for item in items:
         if not isinstance(item, dict):
             continue
         if item.get("draft") or item.get("prerelease"):

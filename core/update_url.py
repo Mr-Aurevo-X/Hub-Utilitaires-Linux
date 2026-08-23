@@ -15,6 +15,8 @@ Channel = Literal["flatpak", "native"]
 SOURCE_REPO = "Mr-Aurevo-X/Hub-Utilitaires-Linux"
 KIT_REPO = SOURCE_REPO
 FLATPAK_RELEASES_API = f"https://api.github.com/repos/{SOURCE_REPO}/releases"
+FLATPAK_RELEASES_LATEST_API = f"{FLATPAK_RELEASES_API}/latest"
+FLATPAK_RELEASES_LIST_API = f"{FLATPAK_RELEASES_API}?per_page=5"
 FLATPAK_PUBLIC_RELEASES = f"https://github.com/{SOURCE_REPO}/releases"
 FLATPAK_ASSET = "org.mraurevox.HubUtilitaires.flatpak"
 FLATPAK_DIRECT = (
@@ -28,6 +30,8 @@ SHORTCUT_DIRECT = (
 )
 
 NATIVE_RELEASES_API = "https://api.github.com/repos/Mr-Aurevo-X/linux-releases/releases"
+NATIVE_RELEASES_LATEST_API = f"{NATIVE_RELEASES_API}/latest"
+NATIVE_RELEASES_LIST_API = f"{NATIVE_RELEASES_API}?per_page=5"
 NATIVE_PUBLIC_RELEASES = "https://github.com/Mr-Aurevo-X/linux-releases/releases"
 NATIVE_ASSET_TMPL = "MrAurevoX_Kit-{version}.tar.gz"
 NATIVE_DIRECT = (
@@ -49,7 +53,17 @@ DIRECT_URL = (
     f"{TAG_PREFIX}{{version}}/{FLATPAK_ASSET}"
 )
 
-_ALLOWED_API_URLS = frozenset({FLATPAK_RELEASES_API, NATIVE_RELEASES_API})
+_ALLOWED_API_URLS = frozenset(
+    {
+        FLATPAK_RELEASES_API,
+        FLATPAK_RELEASES_LATEST_API,
+        FLATPAK_RELEASES_LIST_API,
+        NATIVE_RELEASES_API,
+        NATIVE_RELEASES_LATEST_API,
+        NATIVE_RELEASES_LIST_API,
+    }
+)
+_TRANSIENT_HTTP = frozenset({502, 503, 504})
 _ALLOWED_GITHUB_PATH_PREFIXES = (
     f"/repos/{SOURCE_REPO}/",
     f"/{SOURCE_REPO}/",
