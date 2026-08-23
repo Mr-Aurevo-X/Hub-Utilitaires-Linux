@@ -57,7 +57,10 @@ def nav_groups() -> tuple[NavGroup, ...]:
         ),
         NavGroup(
             "studio",
-            (NavPage("color", "color-select-symbolic"),),
+            (
+                NavPage("color", "color-select-symbolic"),
+                NavPage("atelier", "applications-engineering-symbolic"),
+            ),
         ),
     )
 

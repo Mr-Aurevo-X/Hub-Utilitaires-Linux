@@ -51,6 +51,7 @@ _LEGACY_SECTION_TO_GROUP = {
 PAGE_KEYS = (
     "find",
     "color",
+    "atelier",
     "rename",
     "hash",
     "resize",

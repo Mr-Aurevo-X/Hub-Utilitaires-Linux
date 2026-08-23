@@ -22,6 +22,7 @@ from ui_kit.dialogs.update import present as present_update_dialog
 from ui_kit.shell import ShellLayout, build_main_layout
 from ui.nav import NavSidebar, nav_pages, page_titles
 from ui.pages import (
+    AtelierPage,
     ColorPage,
     DiskPage,
     FilePage,
@@ -225,6 +226,8 @@ class MainWindow(Adw.ApplicationWindow):
             return FindPage(self, self._toast, self._settings, on_send=self.send_paths)
         if key == "color":
             return ColorPage(self, self._toast)
+        if key == "atelier":
+            return AtelierPage(self, self._toast)
         if key == "rename":
             return RenamePage(self, self._toast, self._settings)
         if key == "hash":
@@ -271,6 +274,12 @@ class MainWindow(Adw.ApplicationWindow):
 
     def send_paths(self, target: SendTarget | str, paths: list[Path]) -> None:
         key = coerce_send_target(target)
+        if key == "textdiff":
+            from core import cross_hub
+
+            cross_hub.write_pending_textdiff(paths)
+            show_toast(self._toast, i18n.t("send_textdiff_hub_dev"), 6)
+            return
         folder = self._workset.folder
         raw = str(self._settings.get("last_folder") or "").strip()
         if raw:

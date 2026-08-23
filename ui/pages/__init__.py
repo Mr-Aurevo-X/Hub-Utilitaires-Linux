@@ -1,4 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
+from ui.pages.atelier_page import AtelierPage
 from ui.pages.color_page import ColorPage
 from ui.pages.disk_page import DiskPage
 from ui.pages.file_page import FilePage
@@ -11,6 +12,7 @@ from ui.pages.prefs_page import PrefsPage
 from ui.pages.rename_page import RenamePage
 
 __all__ = [
+    "AtelierPage",
     "ColorPage",
     "DiskPage",
     "FilePage",
