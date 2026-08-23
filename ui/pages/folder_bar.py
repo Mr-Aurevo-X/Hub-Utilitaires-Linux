@@ -10,6 +10,7 @@ from gi.repository import Gtk
 from core import i18n
 from core import settings as app_settings
 from ui import compat
+from . import common as pages_common
 
 
 class FolderBar:
@@ -25,18 +26,20 @@ class FolderBar:
         self._entry = Gtk.Entry()
         self._entry.set_hexpand(True)
         self._entry.set_text(self._initial())
-        pick = Gtk.Button(label=i18n.t("pick_folder"))
+        pick = Gtk.Button()
+        common.bind_i18n(pick, "pick_folder", "label")
         pick.connect("clicked", lambda *_: compat.select_folder(self._window, self.set_folder))
         self._entry.connect("activate", lambda *_: self.set_folder(self.folder()))
+        self._pick = pick
         self._recent_btn = Gtk.MenuButton()
         self._recent_btn.set_icon_name("document-open-recent-symbolic")
-        self._recent_btn.set_tooltip_text(i18n.t("folder_recent"))
+        common.bind_i18n(self._recent_btn, "folder_recent", "tooltip")
         self._menu_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
         popover = Gtk.Popover()
         popover.set_child(self._menu_box)
         self._recent_btn.set_popover(popover)
         self._fav_btn = Gtk.Button(icon_name="starred-symbolic")
-        self._fav_btn.set_tooltip_text(i18n.t("folder_favorite"))
+        common.bind_i18n(self._fav_btn, "folder_favorite", "tooltip")
         self._fav_btn.connect("clicked", self._toggle_favorite)
         row = Gtk.Box(spacing=8)
         row.append(self._entry)
@@ -99,3 +102,7 @@ class FolderBar:
         self._rebuild_recent_menu()
         if notify and self._on_folder is not None:
             self._on_folder(resolved)
+
+    def relabel(self) -> None:
+        common.relabel_tree(self.widget)
+        self._rebuild_recent_menu()

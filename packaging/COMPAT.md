@@ -5,7 +5,7 @@
 | Canal | Repo | Assets | Garantie |
 | --- | --- | --- | --- |
 | Flatpak (recommandé) | [linux-flatpak-releases](https://github.com/Mr-Aurevo-X/linux-flatpak-releases) | `org.mraurevox.HubUtilitaires.flatpak` | Même UI sur Mint, Ubuntu, Fedora, Arch, CachyOS, openSUSE (runtime Flathub GNOME 49) ; **MAJ auto** |
-| Natif | [linux-releases](https://github.com/Mr-Aurevo-X/linux-releases) | `MrAurevoX_Kit-*.tar.gz` | Paquets de **votre** distro via `install.sh` ; **MAJ auto** (`install.sh --skip-deps`) |
+| Natif | [linux-releases](https://github.com/Mr-Aurevo-X/linux-releases) | `MrAurevoX_Kit-*.tar.gz` (nom de fichier **historique** du canal ; produit = Hub Utilitaires) | Paquets de **votre** distro via `install.sh` ; **MAJ auto** (`install.sh --skip-deps`) |
 
 Le dépôt source `Hub-Utilitaires` reste **privé**. Ces hubs hébergent aussi Crypto Tracker et Gest Linux Pro.
 
@@ -32,7 +32,7 @@ Si `python-segno` manque (Arch/CachyOS) ou `python3-pypdf` / `python3-segno` (Mi
 
 Profil cible : glibc 2.35, Python 3.10.12, GTK 4.6, libadwaita 1.1, OpenSSL 3.0.2.
 
-| Point | Natif Mint 21.3 | Kit |
+| Point | Natif Mint 21.3 | Hub Utilitaires |
 | --- | --- | --- |
 | Python 3.10 | OK (`list[]`, `X \| Y`) | 3.10 minimum |
 | GTK 4.6 | pas de `Gtk.FileDialog` / `ColorDialog` (4.10) | `FileChooserNative` / `ColorChooserNative` |

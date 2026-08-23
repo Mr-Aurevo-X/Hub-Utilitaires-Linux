@@ -102,3 +102,61 @@ def test_polish_ui_hooks_present() -> None:
     assert "atelier_password" in atelier_src
     gen_tab = atelier_src.split("def _tab_generate")[1].split("def _")[0]
     assert "gen_password" not in gen_tab
+
+
+def test_product_truth_hub_not_kit_identity() -> None:
+    root = Path(__file__).resolve().parents[1]
+    modules = (root / "MODULES.md").read_text(encoding="utf-8")
+    assert "devises" not in modules.lower()
+    assert "Unités" in modules
+    meta = (root / "packaging" / "flatpak" / "org.mraurevox.HubUtilitaires.metainfo.xml").read_text(
+        encoding="utf-8"
+    )
+    assert "github.com/Mr-Aurevo-X/Hub Utilitaires" not in meta
+    assert '<url type="homepage">https://github.com/Mr-Aurevo-X/Hub-Utilitaires-Linux</url>' in meta
+    update_url = (root / "core" / "update_url.py").read_text(encoding="utf-8")
+    assert "Kit updates" not in update_url
+    assert "SOURCE_REPO" in update_url
+    assert "MrAurevoX_Kit-{version}.tar.gz" in update_url
+    compat = (root / "packaging" / "COMPAT.md").read_text(encoding="utf-8")
+    assert "Hub Utilitaires" in compat
+    assert "historique" in compat.lower()
+
+
+def test_language_toggle_relabels_without_rebuild() -> None:
+    root = Path(__file__).resolve().parents[1]
+    window = (root / "ui" / "main_window.py").read_text(encoding="utf-8")
+    apply = window.split("def _apply_language")[1].split("\n    def ")[0]
+    assert "_rebuild_pages" not in apply
+    assert "_relabel_ui" in apply
+    assert "def _relabel_ui" in window
+    common_src = (root / "ui" / "pages" / "common.py").read_text(encoding="utf-8")
+    assert "def bind_i18n" in common_src
+    assert "def relabel_tree" in common_src
+
+
+def test_relabel_tree_updates_bound_label() -> None:
+    from gi.repository import Gtk
+
+    from core import i18n
+    from ui.pages.atelier_page import AtelierPage
+    from ui.pages import common
+
+    previous = i18n.language()
+    try:
+        i18n.set_language("fr")
+        btn = Gtk.Button()
+        common.bind_i18n(btn, "copy", "label")
+        assert btn.get_label() == "Copier"
+        i18n.set_language("en")
+        common.relabel_tree(btn)
+        assert btn.get_label() == "Copy"
+        win = Gtk.Window()
+        page = AtelierPage(win, Gtk.Label())
+        buf = page._text_in.get_buffer()
+        buf.set_text("KEEP-STATE")
+        page.relabel()
+        start, end = buf.get_start_iter(), buf.get_end_iter()
+        assert buf.get_text(start, end, True) == "KEEP-STATE"
+    finally:
+        i18n.set_language(previous)

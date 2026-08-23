@@ -34,7 +34,7 @@ Préférences = dialogue chrome (`Ctrl+,`), pas une entrée sidebar.
 | UuidGen / DummyFile / DesktopMaker / Qr / Cron / Gitignore | Atelier → Générer |
 | PassGen (classes, ambigu, lot, PIN, phrase) | Atelier → Mots de passe |
 | MdPreview | Atelier → Aperçu |
-| Unités / devises / epoch | Atelier Générer |
+| Unités / epoch | Atelier → Générer |
 | Color picker + palette + historique session | Page Pipette |
 | CsvTools fusion / coupe | Atelier → Données |
 | Broken **symlinks** + TrashPeek + stats + dupes | Lots |

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""GitHub allowlist for Kit updates. No other host."""
+"""GitHub allowlist for Hub Utilitaires updates. No other host."""
 
 from __future__ import annotations
 
@@ -12,17 +12,18 @@ from typing import Any, Literal
 
 Channel = Literal["flatpak", "native"]
 
-KIT_REPO = "Mr-Aurevo-X/Hub-Utilitaires-Linux"
-FLATPAK_RELEASES_API = f"https://api.github.com/repos/{KIT_REPO}/releases"
-FLATPAK_PUBLIC_RELEASES = f"https://github.com/{KIT_REPO}/releases"
+SOURCE_REPO = "Mr-Aurevo-X/Hub-Utilitaires-Linux"
+KIT_REPO = SOURCE_REPO
+FLATPAK_RELEASES_API = f"https://api.github.com/repos/{SOURCE_REPO}/releases"
+FLATPAK_PUBLIC_RELEASES = f"https://github.com/{SOURCE_REPO}/releases"
 FLATPAK_ASSET = "org.mraurevox.HubUtilitaires.flatpak"
 FLATPAK_DIRECT = (
-    f"https://github.com/{KIT_REPO}/releases/download/"
+    f"https://github.com/{SOURCE_REPO}/releases/download/"
     "v{version}/" + FLATPAK_ASSET
 )
 SHORTCUT_ASSET = "INSTALLER-RACCOURCI-FLATPAK.sh"
 SHORTCUT_DIRECT = (
-    f"https://github.com/{KIT_REPO}/releases/download/"
+    f"https://github.com/{SOURCE_REPO}/releases/download/"
     "v{version}/" + SHORTCUT_ASSET
 )
 
@@ -44,14 +45,14 @@ RELEASES_API = FLATPAK_RELEASES_API
 PUBLIC_RELEASES = FLATPAK_PUBLIC_RELEASES
 ASSET_NAME = FLATPAK_ASSET
 DIRECT_URL = (
-    f"https://github.com/{KIT_REPO}/releases/download/"
+    f"https://github.com/{SOURCE_REPO}/releases/download/"
     f"{TAG_PREFIX}{{version}}/{FLATPAK_ASSET}"
 )
 
 _ALLOWED_API_URLS = frozenset({FLATPAK_RELEASES_API, NATIVE_RELEASES_API})
 _ALLOWED_GITHUB_PATH_PREFIXES = (
-    f"/repos/{KIT_REPO}/",
-    f"/{KIT_REPO}/",
+    f"/repos/{SOURCE_REPO}/",
+    f"/{SOURCE_REPO}/",
     "/repos/Mr-Aurevo-X/linux-releases/",
     "/Mr-Aurevo-X/linux-releases/",
 )

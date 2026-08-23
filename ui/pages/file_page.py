@@ -32,6 +32,11 @@ class FilePage:
         outer = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
         switcher, stack = compat.view_switcher_stack()
         outer.append(switcher)
+        self._stack = stack
+        self._tab_titles = (
+            ("inspect", "file_inspect"),
+            ("archive", "file_archive"),
+        )
         stack.add_titled(self._tab_inspect(), "inspect", i18n.t("file_inspect"))
         stack.add_titled(self._tab_archive(), "archive", i18n.t("file_archive"))
         stack.set_vexpand(True)
@@ -57,30 +62,28 @@ class FilePage:
         self._chunk.set_value(8)
         box.append(Gtk.Label(label=i18n.t("file_split"), xalign=0))
         box.append(self._chunk)
-        inspect = common.prefs_group(
-            i18n.t("group_inspect"),
+        inspect = common.prefs_group("group_inspect",
             [
-                common.button_row(i18n.t("file_inspect"), self._inspect, suggested=True),
-                common.button_row(i18n.t("file_chmod"), self._chmod),
-                common.button_row(i18n.t("file_hex"), self._hex),
-                common.button_row(i18n.t("file_diff"), self._diff),
-                common.button_row(i18n.t("file_encoding"), self._encoding),
-                common.button_row(i18n.t("file_touch"), self._touch),
-                common.button_row(i18n.t("file_tree_size"), self._tree_size),
-                common.button_row(i18n.t("file_flatpak"), self._flatpak),
+                common.button_row("file_inspect", self._inspect, suggested=True),
+                common.button_row("file_chmod", self._chmod),
+                common.button_row("file_hex", self._hex),
+                common.button_row("file_diff", self._diff),
+                common.button_row("file_encoding", self._encoding),
+                common.button_row("file_touch", self._touch),
+                common.button_row("file_tree_size", self._tree_size),
+                common.button_row("file_flatpak", self._flatpak),
             ],
         )
-        rewrite = common.prefs_group(
-            i18n.t("group_rewrite"),
+        rewrite = common.prefs_group("group_rewrite",
             [
-                common.button_row(i18n.t("file_lf"), lambda *_: self._rewrite("lf")),
-                common.button_row(i18n.t("file_utf8"), lambda *_: self._rewrite("utf8")),
-                common.button_row(i18n.t("file_rstrip"), lambda *_: self._rewrite("rstrip")),
-                common.button_row(i18n.t("file_split"), self._split),
-                common.button_row(i18n.t("file_join"), self._join),
-                common.button_row(i18n.t("file_copy"), self._copy),
-                common.button_row(i18n.t("file_symlink"), self._symlink),
-                common.button_row(i18n.t("file_relink"), self._relink),
+                common.button_row("file_lf", lambda *_: self._rewrite("lf")),
+                common.button_row("file_utf8", lambda *_: self._rewrite("utf8")),
+                common.button_row("file_rstrip", lambda *_: self._rewrite("rstrip")),
+                common.button_row("file_split", self._split),
+                common.button_row("file_join", self._join),
+                common.button_row("file_copy", self._copy),
+                common.button_row("file_symlink", self._symlink),
+                common.button_row("file_relink", self._relink),
             ],
         )
         box.append(inspect)
@@ -101,14 +104,13 @@ class FilePage:
         box.append(self._arc_list)
         self._filter = Gtk.Entry(placeholder_text=i18n.t("file_filter"))
         box.append(self._filter)
-        grid = common.prefs_group(
-            i18n.t("group_archive"),
+        grid = common.prefs_group("group_archive",
             [
-                common.button_row(i18n.t("file_list_arc"), self._list_arc, suggested=True),
-                common.button_row(i18n.t("file_make_zip"), self._make_zip),
-                common.button_row(i18n.t("file_make_tar"), self._make_tar),
-                common.button_row(i18n.t("file_extract"), self._extract),
-                common.button_row(i18n.t("file_diff_arc"), self._diff_arc),
+                common.button_row("file_list_arc", self._list_arc, suggested=True),
+                common.button_row("file_make_zip", self._make_zip),
+                common.button_row("file_make_tar", self._make_tar),
+                common.button_row("file_extract", self._extract),
+                common.button_row("file_diff_arc", self._diff_arc),
             ],
         )
         box.append(grid)

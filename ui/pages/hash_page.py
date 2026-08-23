@@ -33,9 +33,8 @@ class HashPage:
         a_btn.connect("clicked", lambda *_: compat.open_files(self._window, self._set_a))
         b_btn = Gtk.Button(label=i18n.t("hash_file_b"))
         b_btn.connect("clicked", lambda *_: compat.open_files(self._window, self._set_b))
-        files = common.prefs_group(
-            i18n.t("group_files"),
-            [common.action_row(i18n.t("hash_file"), a_btn), common.action_row(i18n.t("hash_file_b"), b_btn)],
+        files = common.prefs_group("group_files",
+            [common.action_row("hash_file", a_btn), common.action_row("hash_file_b", b_btn)],
         )
         self._label_a = Gtk.Label(label="A —", wrap=True, xalign=0)
         self._label_b = Gtk.Label(label="B —", wrap=True, xalign=0)
@@ -59,7 +58,7 @@ class HashPage:
             row = common.action_row(title, copy)
             row.add_suffix(entry)
             digest_rows.append(row)
-        digests = common.prefs_group(i18n.t("group_digests"), digest_rows)
+        digests = common.prefs_group("group_digests", digest_rows)
         self._hmac_key = Gtk.Entry(placeholder_text=i18n.t("hash_hmac_key"))
         self._hmac = Gtk.Entry(placeholder_text=i18n.t("hash_hmac"))
         self._expect = Gtk.Entry(placeholder_text=i18n.t("hash_compare"))
@@ -76,17 +75,16 @@ class HashPage:
         dir_a_btn.connect("clicked", lambda *_: compat.select_folder(self._window, self._set_dir_a))
         dir_b_btn = Gtk.Button(label=i18n.t("hash_dir_b"))
         dir_b_btn.connect("clicked", lambda *_: compat.select_folder(self._window, self._set_dir_b))
-        compare = common.prefs_group(
-            i18n.t("group_compare"),
+        compare = common.prefs_group("group_compare",
             [
-                common.action_row(i18n.t("hash_run"), go),
-                common.action_row(i18n.t("hash_compare_files"), cmp_btn),
-                common.action_row(i18n.t("hash_manifest"), man),
-                common.action_row(i18n.t("hash_verify"), verify),
-                common.action_row(i18n.t("hash_dir_a"), dir_a_btn),
-                common.action_row(i18n.t("hash_dir_b"), dir_b_btn),
-                common.button_row(i18n.t("hash_compare_dirs"), self._compare_dirs),
-                common.button_row(i18n.t("hash_sha256sums"), self._sha256sums),
+                common.action_row("hash_run", go),
+                common.action_row("hash_compare_files", cmp_btn),
+                common.action_row("hash_manifest", man),
+                common.action_row("hash_verify", verify),
+                common.action_row("hash_dir_a", dir_a_btn),
+                common.action_row("hash_dir_b", dir_b_btn),
+                common.button_row("hash_compare_dirs", self._compare_dirs),
+                common.button_row("hash_sha256sums", self._sha256sums),
             ],
         )
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)

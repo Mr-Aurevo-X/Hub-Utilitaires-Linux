@@ -34,6 +34,7 @@ from ui.pages import (
     PrefsPage,
     RenamePage,
 )
+from ui.pages.common import relabel_page
 
 def _nav_pages() -> tuple[tuple[str, str], ...]:
     return nav_pages()
@@ -321,9 +322,7 @@ class MainWindow(Adw.ApplicationWindow):
             return
         i18n.set_language(code)
         current = self._stack.get_visible_child_name() or "find"
-        self._rebuild_pages(current)
-        if self._layout is not None:
-            self._layout.update_language_button(code)
+        self._relabel_ui(current)
 
     def _save_prefs_from_kit(self, _settings: dict[str, Any]) -> None:
         show_toast(self._toast, i18n.t("prefs_saved"))
@@ -385,16 +384,16 @@ class MainWindow(Adw.ApplicationWindow):
 
         donate_dialog.present(self, i18n.language())
 
-    def _rebuild_pages(self, current: str) -> None:
-        for name in list(self._pages):
-            child = self._stack.get_child_by_name(name)
-            if child is not None:
-                self._stack.remove(child)
-        self._pages.clear()
+    def _relabel_ui(self, current: str) -> None:
         if self._nav_sidebar is not None:
             self._nav_sidebar.update_settings(self._settings)
             self._nav_sidebar.relabel()
-        self._show_page(current)
+        if self._layout is not None:
+            titles = page_titles()
+            self._layout.set_page_title(titles.get(current, current))
+            self._layout.update_language_button(i18n.language())
+        for page in self._pages.values():
+            relabel_page(page)
 
     def _set_auto_update_enabled(self, enabled: bool) -> None:
         self._settings["auto_update_on_startup"] = bool(enabled)

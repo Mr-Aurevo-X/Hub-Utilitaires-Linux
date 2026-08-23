@@ -91,36 +91,33 @@ class LotsPage:
         cancel = Gtk.Button(label=i18n.t("disk_cancel"))
         cancel.connect("clicked", lambda *_: self._do_cancel())
         box.append(cancel)
-        scan = common.prefs_group(
-            i18n.t("group_actions"),
+        scan = common.prefs_group("group_actions",
             [
-                common.button_row(i18n.t("lots_dupes"), self._dupes, suggested=True),
-                common.button_row(i18n.t("lots_names"), self._names),
-                common.button_row(i18n.t("lots_empty"), self._empty),
-                common.button_row(i18n.t("lots_old"), self._old),
-                common.button_row(i18n.t("lots_large"), self._large),
-                common.button_row(i18n.t("lots_stats"), self._stats),
-                common.button_row(i18n.t("lots_broken"), self._broken),
-                common.button_row(i18n.t("lots_trash"), self._trash),
+                common.button_row("lots_dupes", self._dupes, suggested=True),
+                common.button_row("lots_names", self._names),
+                common.button_row("lots_empty", self._empty),
+                common.button_row("lots_old", self._old),
+                common.button_row("lots_large", self._large),
+                common.button_row("lots_stats", self._stats),
+                common.button_row("lots_broken", self._broken),
+                common.button_row("lots_trash", self._trash),
             ],
         )
-        more = common.prefs_group(
-            i18n.t("group_more"),
+        more = common.prefs_group("group_more",
             [
-                common.button_row(i18n.t("lots_doc_links"), self._doc_links),
-                common.button_row(i18n.t("lots_eol"), self._eol),
-                common.button_row(i18n.t("lots_near_images"), self._near_images),
-                common.button_row(i18n.t("lots_empty_files"), self._empty_files),
+                common.button_row("lots_doc_links", self._doc_links),
+                common.button_row("lots_eol", self._eol),
+                common.button_row("lots_near_images", self._near_images),
+                common.button_row("lots_empty_files", self._empty_files),
             ],
         )
-        extra = Gtk.Expander(label=i18n.t("group_more"))
+        extra = common.t_expander("group_more")
         extra.set_child(more)
-        act = common.prefs_group(
-            i18n.t("group_export"),
+        act = common.prefs_group("group_export",
             [
-                common.button_row(i18n.t("hash_manifest"), self._manifest),
-                common.button_row(i18n.t("lots_move"), self._move),
-                common.button_row(i18n.t("lots_export"), self._export),
+                common.button_row("hash_manifest", self._manifest),
+                common.button_row("lots_move", self._move),
+                common.button_row("lots_export", self._export),
             ],
         )
         box.append(scan)

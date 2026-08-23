@@ -36,6 +36,15 @@ class AtelierPage:
         outer = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
         switcher, stack = compat.view_switcher_stack()
         outer.append(switcher)
+        self._stack = stack
+        self._tab_titles = (
+            ("text", "atelier_text"),
+            ("encode", "atelier_encode"),
+            ("gen", "atelier_generate"),
+            ("password", "atelier_password"),
+            ("preview", "atelier_preview"),
+            ("data", "atelier_data"),
+        )
         stack.add_titled(self._tab_text(), "text", i18n.t("atelier_text"))
         stack.add_titled(self._tab_encode(), "encode", i18n.t("atelier_encode"))
         stack.add_titled(self._tab_generate(), "gen", i18n.t("atelier_generate"))
@@ -45,6 +54,9 @@ class AtelierPage:
         stack.set_vexpand(True)
         outer.append(stack)
         return outer
+
+    def relabel(self) -> None:
+        common.relabel_page(self)
 
     def _tab_text(self) -> Gtk.Widget:
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
@@ -59,36 +71,34 @@ class AtelierPage:
         self._text_in.set_wrap_mode(Gtk.WrapMode.WORD_CHAR)
         box.append(common.scrolled(self._text_in))
         box.append(
-            common.prefs_group(
-                i18n.t("group_actions"),
+            common.prefs_group("group_actions",
                 [
-                    common.button_row(i18n.t("text_run"), lambda *_: self._on_text("run"), suggested=True),
-                    common.button_row(i18n.t("text_regex"), lambda *_: self._on_text("regex")),
-                    common.button_row(i18n.t("text_normalize"), lambda *_: self._on_text("normalize")),
+                    common.button_row("text_run", lambda *_: self._on_text("run"), suggested=True),
+                    common.button_row("text_regex", lambda *_: self._on_text("regex")),
+                    common.button_row("text_normalize", lambda *_: self._on_text("normalize")),
                 ],
             )
         )
-        more = common.prefs_group(
-            i18n.t("group_more"),
+        more = common.prefs_group("group_more",
             [
-                common.button_row(i18n.t("text_upper"), lambda *_: self._on_text("upper")),
-                common.button_row(i18n.t("text_lower"), lambda *_: self._on_text("lower")),
-                common.button_row(i18n.t("text_trim"), lambda *_: self._on_text("trim")),
-                common.button_row(i18n.t("text_slug"), lambda *_: self._on_text("slug")),
-                common.button_row(i18n.t("text_accents"), lambda *_: self._on_text("accents")),
-                common.button_row(i18n.t("text_html_e"), lambda *_: self._on_text("html_escape")),
-                common.button_row(i18n.t("text_html_u"), lambda *_: self._on_text("html_unescape")),
-                common.button_row(i18n.t("text_lf"), lambda *_: self._on_text("lf")),
-                common.button_row(i18n.t("text_crlf"), lambda *_: self._on_text("crlf")),
-                common.button_row(i18n.t("text_sort"), lambda *_: self._on_text("sort")),
-                common.button_row(i18n.t("text_unique"), lambda *_: self._on_text("unique")),
-                common.button_row(i18n.t("text_reverse"), lambda *_: self._on_text("reverse")),
-                common.button_row(i18n.t("text_wrap"), lambda *_: self._on_text("wrap")),
-                common.button_row(i18n.t("text_counts"), lambda *_: self._on_text("counts")),
-                common.button_row(i18n.t("text_sha"), lambda *_: self._on_text("sha")),
+                common.button_row("text_upper", lambda *_: self._on_text("upper")),
+                common.button_row("text_lower", lambda *_: self._on_text("lower")),
+                common.button_row("text_trim", lambda *_: self._on_text("trim")),
+                common.button_row("text_slug", lambda *_: self._on_text("slug")),
+                common.button_row("text_accents", lambda *_: self._on_text("accents")),
+                common.button_row("text_html_e", lambda *_: self._on_text("html_escape")),
+                common.button_row("text_html_u", lambda *_: self._on_text("html_unescape")),
+                common.button_row("text_lf", lambda *_: self._on_text("lf")),
+                common.button_row("text_crlf", lambda *_: self._on_text("crlf")),
+                common.button_row("text_sort", lambda *_: self._on_text("sort")),
+                common.button_row("text_unique", lambda *_: self._on_text("unique")),
+                common.button_row("text_reverse", lambda *_: self._on_text("reverse")),
+                common.button_row("text_wrap", lambda *_: self._on_text("wrap")),
+                common.button_row("text_counts", lambda *_: self._on_text("counts")),
+                common.button_row("text_sha", lambda *_: self._on_text("sha")),
             ],
         )
-        extra = Gtk.Expander(label=i18n.t("group_more"))
+        extra = common.t_expander("group_more")
         extra.set_child(more)
         box.append(extra)
         self._text_out = Gtk.TextView()
@@ -145,28 +155,27 @@ class AtelierPage:
         self._enc_in.set_wrap_mode(Gtk.WrapMode.WORD_CHAR)
         box.append(common.scrolled(self._enc_in))
         actions: list[tuple[str, Callable[[str], str]]] = [
-            (i18n.t("encode_json"), codec.pretty_json),
-            (i18n.t("encode_json_min"), codec.minify_json),
-            (i18n.t("encode_jsonl"), codec.pretty_jsonl),
-            (i18n.t("encode_jsonl_min"), codec.minify_jsonl),
-            (i18n.t("encode_jsonl_check"), lambda t: (codec.validate_jsonl(t) or "OK")),
-            (i18n.t("encode_yaml"), codec.pretty_yaml),
-            (i18n.t("encode_xml"), codec.pretty_xml),
-            (i18n.t("encode_ini"), codec.pretty_ini),
-            (i18n.t("encode_jwt"), codec.decode_jwt),
-            (i18n.t("encode_b64e"), codec.b64_encode),
-            (i18n.t("encode_b64d"), codec.b64_decode),
-            (i18n.t("encode_urle"), codec.url_encode),
-            (i18n.t("encode_urld"), codec.url_decode),
-            (i18n.t("encode_rot13"), codec.rot13),
-            (i18n.t("encode_hash"), lambda t: codec.hash_text(t, "sha256")),
-            (i18n.t("encode_hex"), codec.hexdump_text),
+            ("encode_json", codec.pretty_json),
+            ("encode_json_min", codec.minify_json),
+            ("encode_jsonl", codec.pretty_jsonl),
+            ("encode_jsonl_min", codec.minify_jsonl),
+            ("encode_jsonl_check", lambda t: (codec.validate_jsonl(t) or "OK")),
+            ("encode_yaml", codec.pretty_yaml),
+            ("encode_xml", codec.pretty_xml),
+            ("encode_ini", codec.pretty_ini),
+            ("encode_jwt", codec.decode_jwt),
+            ("encode_b64e", codec.b64_encode),
+            ("encode_b64d", codec.b64_decode),
+            ("encode_urle", codec.url_encode),
+            ("encode_urld", codec.url_decode),
+            ("encode_rot13", codec.rot13),
+            ("encode_hash", lambda t: codec.hash_text(t, "sha256")),
+            ("encode_hex", codec.hexdump_text),
         ]
-        primary = common.prefs_group(
-            i18n.t("group_actions"),
+        primary = common.prefs_group("group_actions",
             [
                 common.button_row(actions[0][0], lambda *_a, func=actions[0][1]: self._run_codec(func), suggested=True),
-                common.button_row(i18n.t("encode_env"), self._env_inspect),
+                common.button_row("encode_env", self._env_inspect),
             ],
         )
         box.append(primary)
@@ -174,13 +183,13 @@ class AtelierPage:
             common.button_row(label, lambda *_a, func=fn: self._run_codec(func))
             for label, fn in actions[1:]
         ]
-        extra = Gtk.Expander(label=i18n.t("group_more"))
-        extra.set_child(common.prefs_group(i18n.t("group_more"), more_rows))
+        extra = common.t_expander("group_more")
+        extra.set_child(common.prefs_group("group_more", more_rows))
         box.append(extra)
         self._enc_out = Gtk.TextView()
         self._enc_out.set_wrap_mode(Gtk.WrapMode.WORD_CHAR)
         box.append(common.scrolled(self._enc_out))
-        copy = Gtk.Button(label=i18n.t("copy"))
+        copy = common.t_button("copy")
         copy.connect("clicked", lambda *_: common.copy_text(_buffer_text(self._enc_out), self._toast))
         box.append(copy)
         return common.scrolled(box)
@@ -337,7 +346,7 @@ class AtelierPage:
         self._gen_out.set_wrap_mode(Gtk.WrapMode.WORD_CHAR)
         extra.append(common.scrolled(self._gen_out))
 
-        more = Gtk.Expander(label=i18n.t("group_more"))
+        more = common.t_expander("group_more")
         more.set_child(extra)
         box.append(more)
         return common.scrolled(box)
@@ -604,9 +613,8 @@ class AtelierPage:
         self._md_in.set_wrap_mode(Gtk.WrapMode.WORD_CHAR)
         box.append(common.scrolled(self._md_in))
         box.append(
-            common.prefs_group(
-                i18n.t("group_actions"),
-                [common.button_row(i18n.t("md_preview"), self._md_preview, suggested=True)],
+            common.prefs_group("group_actions",
+                [common.button_row("md_preview", self._md_preview, suggested=True)],
             )
         )
         self._md_out = Gtk.Label(wrap=True, xalign=0, use_markup=True)
@@ -624,15 +632,14 @@ class AtelierPage:
         self._data_in.set_wrap_mode(Gtk.WrapMode.WORD_CHAR)
         box.append(common.scrolled(self._data_in))
         data_actions = (
-            (i18n.t("data_csv_json"), codec.csv_to_json),
-            (i18n.t("data_json_csv"), codec.json_to_csv),
-            (i18n.t("data_json_yaml"), codec.json_to_yaml),
-            (i18n.t("data_yaml_json"), codec.yaml_to_json),
-            (i18n.t("data_flatten"), codec.flatten_json),
+            ("data_csv_json", codec.csv_to_json),
+            ("data_json_csv", codec.json_to_csv),
+            ("data_json_yaml", codec.json_to_yaml),
+            ("data_yaml_json", codec.yaml_to_json),
+            ("data_flatten", codec.flatten_json),
         )
         box.append(
-            common.prefs_group(
-                i18n.t("group_actions"),
+            common.prefs_group("group_actions",
                 [
                     common.button_row(
                         data_actions[0][0],
@@ -642,10 +649,9 @@ class AtelierPage:
                 ],
             )
         )
-        extra = Gtk.Expander(label=i18n.t("group_more"))
+        extra = common.t_expander("group_more")
         extra.set_child(
-            common.prefs_group(
-                i18n.t("group_more"),
+            common.prefs_group("group_more",
                 [common.button_row(label, lambda *_a, func=fn: self._run_data(func)) for label, fn in data_actions[1:]],
             )
         )
@@ -661,12 +667,11 @@ class AtelierPage:
         split_btn = Gtk.Button(label=i18n.t("data_csv_split"))
         split_btn.connect("clicked", self._csv_split)
         box.append(
-            common.prefs_group(
-                i18n.t("group_export"),
+            common.prefs_group("group_export",
                 [
-                    common.action_row(i18n.t("add_files"), pick_csv),
-                    common.action_row(i18n.t("data_csv_merge"), merge_btn),
-                    common.action_row(i18n.t("data_csv_split"), split_btn),
+                    common.action_row("add_files", pick_csv),
+                    common.action_row("data_csv_merge", merge_btn),
+                    common.action_row("data_csv_split", split_btn),
                 ],
             )
         )

@@ -7,7 +7,7 @@
 
 ## Français
 
-Recherche, hash, PDF, images, disque — ex-Kit (hors outils dev). Repo Linux dédié.
+Recherche, hash, PDF, images, disque. Suite locale Linux (héritage Kit, hors outils dev). Repo dédié.
 
 - **GitHub** : `Mr-Aurevo-X/Hub-Utilitaires-Linux` (privé)
 - **Plateforme** : voir [linux-platform](https://github.com/Mr-Aurevo-X/linux-platform)
@@ -34,7 +34,7 @@ Local-first, pas de télémétrie. Vérif. GitHub au démarrage (désactivable, 
 
 ## English
 
-Search, hash, PDF, images, disk map — ex-Kit (non-dev tools). Dedicated Linux repo.
+Search, hash, PDF, images, disk map. Local Linux suite (Kit heritage, non-dev tools). Dedicated repo.
 
 - **GitHub**: `Mr-Aurevo-X/Hub-Utilitaires-Linux` (private)
 - **Platform**: see [linux-platform](https://github.com/Mr-Aurevo-X/linux-platform)

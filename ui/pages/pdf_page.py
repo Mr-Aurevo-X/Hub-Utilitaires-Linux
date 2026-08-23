@@ -30,7 +30,7 @@ class PdfPage:
         box.append(hint)
         add = Gtk.Button(label=i18n.t("add_files"))
         add.connect("clicked", lambda *_: compat.open_files(self._window, self._set_files, multiple=True))
-        box.append(common.prefs_group(i18n.t("group_files"), [common.action_row(i18n.t("add_files"), add)]))
+        box.append(common.prefs_group("group_files", [common.action_row("add_files", add)]))
         self._sel = Gtk.SpinButton.new_with_range(1, 1, 1)
         up = Gtk.Button(label=i18n.t("pdf_up"))
         down = Gtk.Button(label=i18n.t("pdf_down"))
@@ -56,27 +56,25 @@ class PdfPage:
         box.append(Gtk.Label(label=i18n.t("pdf_rotate"), xalign=0))
         self._rot = compat.string_choice(["90", "180", "270"])
         box.append(self._rot)
-        pages = common.prefs_group(
-            i18n.t("group_pages"),
+        pages = common.prefs_group("group_pages",
             [
-                common.button_row(i18n.t("pdf_info"), self._show_info),
-                common.button_row(i18n.t("pdf_merge"), self._merge, suggested=True),
-                common.button_row(i18n.t("pdf_extract"), self._extract),
-                common.button_row(i18n.t("pdf_split"), self._split),
-                common.button_row(i18n.t("pdf_rotate"), self._rotate),
-                common.button_row(i18n.t("pdf_blank_go"), self._insert_blank),
-                common.button_row(i18n.t("pdf_reorder"), self._reorder_pages),
-                common.button_row(i18n.t("pdf_extract_images"), self._extract_images),
-                common.button_row(i18n.t("pdf_inventory"), self._inventory),
-                common.button_row(i18n.t("pdf_inventory_save"), self._inventory_save),
+                common.button_row("pdf_info", self._show_info),
+                common.button_row("pdf_merge", self._merge, suggested=True),
+                common.button_row("pdf_extract", self._extract),
+                common.button_row("pdf_split", self._split),
+                common.button_row("pdf_rotate", self._rotate),
+                common.button_row("pdf_blank_go", self._insert_blank),
+                common.button_row("pdf_reorder", self._reorder_pages),
+                common.button_row("pdf_extract_images", self._extract_images),
+                common.button_row("pdf_inventory", self._inventory),
+                common.button_row("pdf_inventory_save", self._inventory_save),
             ],
         )
-        security = common.prefs_group(
-            i18n.t("group_security"),
+        security = common.prefs_group("group_security",
             [
-                common.button_row(i18n.t("pdf_strip"), self._strip),
-                common.button_row(i18n.t("pdf_encrypt"), self._encrypt),
-                common.button_row(i18n.t("pdf_decrypt"), self._decrypt),
+                common.button_row("pdf_strip", self._strip),
+                common.button_row("pdf_encrypt", self._encrypt),
+                common.button_row("pdf_decrypt", self._decrypt),
             ],
         )
         box.append(pages)

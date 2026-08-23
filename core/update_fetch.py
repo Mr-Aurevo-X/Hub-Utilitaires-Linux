@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Check and download Kit updates (GitHub allowlist only)."""
+"""Check and download Hub Utilitaires updates (GitHub allowlist only)."""
 
 from __future__ import annotations
 
@@ -184,7 +184,7 @@ def _asset_url(item: dict[str, Any], version: str, channel: Channel) -> str:
 
 
 def check_for_update(*, raise_on_error: bool = False) -> dict[str, Any] | None:
-    """Return latest newer Kit release for the active channel, or None."""
+    """Return latest newer Hub Utilitaires release for the active channel, or None."""
     channel = update_channel()
     api = FLATPAK_RELEASES_API if channel == "flatpak" else NATIVE_RELEASES_API
     public = FLATPAK_PUBLIC_RELEASES if channel == "flatpak" else NATIVE_PUBLIC_RELEASES

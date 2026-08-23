@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Publie le .flatpak Kit sur linux-flatpak-releases.
+# Publie le .flatpak Hub Utilitaires sur linux-flatpak-releases.
 # N'écrase jamais les tags Gest / Crypto Tracker.
 #
 # Usage :

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-"""Install Kit updates (Flatpak / native) and launch the terminal scripts."""
+"""Install Hub Utilitaires updates (Flatpak / native) and launch the terminal scripts."""
 
 from __future__ import annotations
 

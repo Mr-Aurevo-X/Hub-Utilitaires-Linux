@@ -45,13 +45,12 @@ class ColorPage:
         rnd = Gtk.Button(label=i18n.t("color_random"))
         rnd.connect("clicked", lambda *_: self._apply(*color_core.random_color()))
         box.append(
-            common.prefs_group(
-                i18n.t("group_actions"),
+            common.prefs_group("group_actions",
                 [
-                    common.action_row(i18n.t("color_pick"), pick),
-                    common.action_row(i18n.t("color_screen"), screen),
+                    common.action_row("color_pick", pick),
+                    common.action_row("color_screen", screen),
                     common.action_row("HEX", copy),
-                    common.action_row(i18n.t("color_random"), rnd),
+                    common.action_row("color_random", rnd),
                 ],
             )
         )
@@ -66,12 +65,11 @@ class ColorPage:
         grad = Gtk.Button(label=i18n.t("color_gradient"))
         grad.connect("clicked", self._gradient)
         box.append(
-            common.prefs_group(
-                i18n.t("group_transform"),
+            common.prefs_group("group_transform",
                 [
-                    common.action_row(i18n.t("color_fg"), fg),
-                    common.action_row(i18n.t("color_palette"), pal),
-                    common.action_row(i18n.t("color_gradient"), grad),
+                    common.action_row("color_fg", fg),
+                    common.action_row("color_palette", pal),
+                    common.action_row("color_gradient", grad),
                 ],
             )
         )
@@ -87,11 +85,10 @@ class ColorPage:
         css_btn = Gtk.Button(label=i18n.t("color_css"))
         css_btn.connect("clicked", lambda *_: self._export_palette("css"))
         box.append(
-            common.prefs_group(
-                i18n.t("group_export"),
+            common.prefs_group("group_export",
                 [
-                    common.action_row(i18n.t("color_gpl"), gpl_btn),
-                    common.action_row(i18n.t("color_css"), css_btn),
+                    common.action_row("color_gpl", gpl_btn),
+                    common.action_row("color_css", css_btn),
                 ],
             )
         )

@@ -36,12 +36,11 @@ class ImagesPage:
         out = Gtk.Button(label=i18n.t("resize_out"))
         out.connect("clicked", lambda *_: compat.select_folder(self._window, self._set_out))
         box.append(
-            common.prefs_group(
-                i18n.t("group_source"),
+            common.prefs_group("group_source",
                 [
-                    common.action_row(i18n.t("add_files"), add),
-                    common.action_row(i18n.t("resize_folder"), folder),
-                    common.action_row(i18n.t("resize_out"), out),
+                    common.action_row("add_files", add),
+                    common.action_row("resize_folder", folder),
+                    common.action_row("resize_out", out),
                 ],
             )
         )
@@ -101,13 +100,12 @@ class ImagesPage:
         go.add_css_class("suggested-action")
         go.connect("clicked", lambda *_: self._run())
         box.append(
-            common.prefs_group(
-                i18n.t("group_export"),
+            common.prefs_group("group_export",
                 [
-                    common.action_row(i18n.t("resize_go"), go),
-                    common.button_row(i18n.t("img_icons"), self._export_icons),
-                    common.button_row(i18n.t("img_exif_rotate"), self._exif_rotate),
-                    common.button_row(i18n.t("img_compare"), self._compare_images),
+                    common.action_row("resize_go", go),
+                    common.button_row("img_icons", self._export_icons),
+                    common.button_row("img_exif_rotate", self._exif_rotate),
+                    common.button_row("img_compare", self._compare_images),
                 ],
             )
         )
