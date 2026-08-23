@@ -55,6 +55,12 @@ class DiskPage:
         box.append(actions)
         self._total = Gtk.Label(xalign=0)
         box.append(self._total)
+        self._map = Gtk.DrawingArea()
+        self._map.set_content_height(160)
+        self._map.set_hexpand(True)
+        self._map.add_css_class("card")
+        self._map.set_draw_func(self._draw_treemap)
+        box.append(self._map)
         self._list = Gtk.ListBox()
         self._list.add_css_class("boxed-list")
         self._list.connect("row-activated", self._open_row)
@@ -107,6 +113,7 @@ class DiskPage:
             self._total.set_text(
                 f"{i18n.t('disk_total')}: {diskmap.human_size(total)} — {len(entries)} ({hidden})"
             )
+            self._map.queue_draw()
             for entry in entries:
                 row = Gtk.ListBoxRow()
                 inner = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
@@ -130,6 +137,29 @@ class DiskPage:
                 self._list.append(row)
 
         run_in_thread(work, done)
+
+    def _draw_treemap(self, _area: Gtk.DrawingArea, cr: object, width: int, height: int) -> None:
+        palette = (
+            (0.18, 0.42, 0.72),
+            (0.16, 0.62, 0.45),
+            (0.72, 0.45, 0.16),
+            (0.55, 0.28, 0.62),
+            (0.22, 0.55, 0.62),
+            (0.62, 0.22, 0.32),
+        )
+        cr.set_source_rgb(0.12, 0.14, 0.16)
+        cr.rectangle(0, 0, width, height)
+        cr.fill()
+        rects = diskmap.treemap_rects(self._entries, float(width), float(height))
+        for index, rect in enumerate(rects):
+            color = palette[index % len(palette)]
+            cr.set_source_rgb(*color)
+            cr.rectangle(rect.x + 1, rect.y + 1, max(0.0, rect.w - 2), max(0.0, rect.h - 2))
+            cr.fill()
+            if rect.w >= 48 and rect.h >= 18:
+                cr.set_source_rgb(0.95, 0.96, 0.97)
+                cr.move_to(rect.x + 6, rect.y + 14)
+                cr.show_text(rect.name[:28])
 
     def _open_row(self, _box: Gtk.ListBox, row: Gtk.ListBoxRow) -> None:
         idx = row.get_index()

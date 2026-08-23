@@ -242,22 +242,31 @@ class LotsPage:
             show_toast(self._toast, i18n.t("lots_dupes"), 4)
             return
 
-        def on_resp(response: str) -> None:
-            if response != "now":
+        def on_folder(folder: Path) -> None:
+            planned = batchutil.preview_move_copies(groups, folder)
+            if not planned:
+                show_toast(self._toast, i18n.t("lots_move_empty"), 4)
                 return
-            compat.select_folder(
+            preview = "\n".join(f"{src.name} → {dest}" for src, dest in planned[:40])
+            if len(planned) > 40:
+                preview += f"\n… +{len(planned) - 40}"
+            body = f"{i18n.t('lots_move_body')}\n\n{preview}"
+
+            def on_resp(response: str) -> None:
+                if response != "now":
+                    return
+                self._bg(lambda: batchutil.move_copies(groups, folder))
+
+            compat.present_alert(
                 self._window,
-                lambda folder: self._bg(lambda: batchutil.move_copies(groups, folder)),
+                i18n.t("lots_move_preview"),
+                body,
+                [("cancel", i18n.t("cancel")), ("now", i18n.t("lots_move"))],
+                suggested="now",
+                on_response=on_resp,
             )
 
-        compat.present_alert(
-            self._window,
-            i18n.t("lots_move_confirm"),
-            i18n.t("lots_move_body"),
-            [("cancel", i18n.t("cancel")), ("now", i18n.t("lots_move"))],
-            suggested="now",
-            on_response=on_resp,
-        )
+        compat.select_folder(self._window, on_folder)
 
     def _export(self, *_args: object) -> None:
         text = batchutil.export_paths(self._paths, csv_mode=True)

@@ -143,6 +143,56 @@ def favorite_folders(settings: dict[str, Any] | None) -> list[str]:
     return out
 
 
+def favorite_searches(settings: dict[str, Any] | None) -> list[dict[str, str]]:
+    raw = [] if settings is None else settings.get("favorite_searches")
+    if not isinstance(raw, list):
+        return []
+    out: list[dict[str, str]] = []
+    seen: set[tuple[str, str, str]] = set()
+    for item in raw:
+        if not isinstance(item, dict):
+            continue
+        row = {
+            "folder": str(item.get("folder") or "").strip(),
+            "query": str(item.get("query") or "").strip(),
+            "content": str(item.get("content") or "").strip(),
+        }
+        key = (row["folder"], row["query"], row["content"])
+        if not any(key) or key in seen:
+            continue
+        seen.add(key)
+        out.append(row)
+    return out[:20]
+
+
+def toggle_favorite_search(
+    settings: dict[str, Any],
+    *,
+    folder: str,
+    query: str,
+    content: str,
+) -> list[dict[str, str]]:
+    row = {
+        "folder": str(folder or "").strip(),
+        "query": str(query or "").strip(),
+        "content": str(content or "").strip(),
+    }
+    favs = favorite_searches(settings)
+    key = (row["folder"], row["query"], row["content"])
+    if not any(key):
+        settings["favorite_searches"] = favs
+        return favs
+    exists = any(
+        (item["folder"], item["query"], item["content"]) == key for item in favs
+    )
+    if exists:
+        favs = [item for item in favs if (item["folder"], item["query"], item["content"]) != key]
+    else:
+        favs = [row, *favs]
+    settings["favorite_searches"] = favs[:20]
+    return favorite_searches(settings)
+
+
 def remember_folder(settings: dict[str, Any], path: str) -> None:
     folder = str(path or "").strip()
     if not folder:
@@ -190,6 +240,7 @@ def load_settings() -> dict[str, Any]:
     data["nav_groups_expanded"] = nav_groups_expanded(merged_nav, str(data.get("last_page") or "find"))
     data["recent_folders"] = recent_folders(raw)
     data["favorite_folders"] = favorite_folders(raw)
+    data["favorite_searches"] = favorite_searches(raw)
     return data
 
 
@@ -204,6 +255,7 @@ def save_settings(settings: dict[str, Any]) -> None:
     payload["nav_groups_expanded"] = nav_groups_expanded(settings, str(merged.get("last_page") or "find"))
     payload["recent_folders"] = recent_folders(settings)
     payload["favorite_folders"] = favorite_folders(settings)
+    payload["favorite_searches"] = favorite_searches(settings)
     settings_path().write_text(
         json.dumps(payload, indent=2, ensure_ascii=False) + "\n",
         encoding="utf-8",

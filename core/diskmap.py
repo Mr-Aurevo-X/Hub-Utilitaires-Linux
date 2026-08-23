@@ -29,6 +29,16 @@ class DiskEntry:
     percent: float
 
 
+@dataclass(frozen=True)
+class TreemapRect:
+    name: str
+    x: float
+    y: float
+    w: float
+    h: float
+    percent: float
+
+
 def human_size(n: int) -> str:
     value = float(max(0, int(n)))
     for unit in ("o", "Kio", "Mio", "Gio", "Tio"):
@@ -112,6 +122,43 @@ def scan_children(
             is_dir = False
         entries.append(DiskEntry(path=path, name=name, is_dir=is_dir, size=size, percent=percent))
     return total, entries, hidden
+
+
+def treemap_rects(entries: list[DiskEntry], width: float, height: float) -> list[TreemapRect]:
+    items = [entry for entry in entries if entry.size > 0]
+    if not items or width <= 0 or height <= 0:
+        return []
+    total = sum(entry.size for entry in items)
+    return _slice_rects(items, 0.0, 0.0, width, height, total, horizontal=True)
+
+
+def _slice_rects(
+    items: list[DiskEntry],
+    x: float,
+    y: float,
+    width: float,
+    height: float,
+    total: int,
+    *,
+    horizontal: bool,
+) -> list[TreemapRect]:
+    if not items:
+        return []
+    first = items[0]
+    group_total = sum(item.size for item in items)
+    share = first.size / group_total if group_total else 1.0
+    percent = first.size / total * 100.0 if total else 0.0
+    if len(items) == 1:
+        return [TreemapRect(first.name, x, y, width, height, percent)]
+    if horizontal:
+        slice_w = width * share
+        head = TreemapRect(first.name, x, y, slice_w, height, percent)
+        tail = _slice_rects(items[1:], x + slice_w, y, width - slice_w, height, total, horizontal=False)
+        return [head, *tail]
+    slice_h = height * share
+    head = TreemapRect(first.name, x, y, width, slice_h, percent)
+    tail = _slice_rects(items[1:], x, y + slice_h, width, height - slice_h, total, horizontal=True)
+    return [head, *tail]
 
 
 def export_csv(entries: list[DiskEntry]) -> str:

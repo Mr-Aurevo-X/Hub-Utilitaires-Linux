@@ -33,8 +33,8 @@ def test_update_urls_allow_our_github_only() -> None:
         "Hub-Utilitaires-v0.1.0/MrAurevoX_Kit-0.1.0.tar.gz"
     )
     ok_flatpak = (
-        "https://github.com/Mr-Aurevo-X/Hub Utilitaires/releases/download/"
-        "Hub-Utilitaires-v0.1.0/org.mraurevox.HubUtilitaires.flatpak"
+        "https://github.com/Mr-Aurevo-X/Hub-Utilitaires-Linux/releases/download/"
+        "v0.1.0/org.mraurevox.HubUtilitaires.flatpak"
     )
     ok_cdn = "https://release-assets.githubusercontent.com/github-production-release-asset/abc"
     assert updater._require_allowed_url(ok_native, kind="download") == ok_native
@@ -300,6 +300,7 @@ def test_lancer_applies_display_env_before_gtk() -> None:
 
 
 def test_qr_png(tmp_path: Path) -> None:
+    pytest.importorskip("segno")
     dest = tmp_path / "qr.png"
     generate.qr_png("hello", dest)
     assert dest.is_file() and dest.stat().st_size > 32
@@ -705,7 +706,7 @@ def test_update_dialog_splits_commands_from_body() -> None:
     info = {
         "version": "2.2.7",
         "current": "2.2.6",
-        "html_url": "https://github.com/Mr-Aurevo-X/Hub Utilitaires/releases/tag/Hub-Utilitaires-v2.2.7",
+        "html_url": "https://github.com/Mr-Aurevo-X/Hub-Utilitaires-Linux/releases/tag/v2.2.7",
         "channel": "flatpak",
         "notes": "## Hub Utilitaires 2.2.7\nNotes release.",
     }

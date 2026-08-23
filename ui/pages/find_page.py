@@ -71,7 +71,22 @@ class FindPage:
         go = Gtk.Button(label=i18n.t("find_go"))
         go.add_css_class("suggested-action")
         go.connect("clicked", lambda *_: self._run())
-        box.append(go)
+        pin = Gtk.Button(icon_name="starred-symbolic")
+        pin.set_tooltip_text(i18n.t("find_search_favorite"))
+        pin.connect("clicked", self._toggle_search_favorite)
+        self._search_fav_btn = Gtk.MenuButton()
+        self._search_fav_btn.set_icon_name("starred-symbolic")
+        self._search_fav_btn.set_tooltip_text(i18n.t("find_search_favorites"))
+        self._search_fav_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
+        popover = Gtk.Popover()
+        popover.set_child(self._search_fav_box)
+        self._search_fav_btn.set_popover(popover)
+        actions = Gtk.Box(spacing=8)
+        actions.append(go)
+        actions.append(pin)
+        actions.append(self._search_fav_btn)
+        box.append(actions)
+        self._rebuild_search_favorites()
         self._count = Gtk.Label(xalign=0)
         box.append(self._count)
         self._list = Gtk.ListBox()
@@ -229,6 +244,44 @@ class FindPage:
     def _export_json(self) -> None:
         text = find_core.export_paths(self._files, json_mode=True)
         compat.save_file(self._window, "find.json", lambda dest: dest.write_text(text, encoding="utf-8"))
+
+    def _toggle_search_favorite(self, *_args: object) -> None:
+        app_settings.toggle_favorite_search(
+            self._settings,
+            folder=str(self._bar.folder()),
+            query=self._query.get_text(),
+            content=self._content.get_text(),
+        )
+        app_settings.save_settings(self._settings)
+        self._rebuild_search_favorites()
+        show_toast(self._toast, i18n.t("find_search_favorites"))
+
+    def _rebuild_search_favorites(self) -> None:
+        child = self._search_fav_box.get_first_child()
+        while child is not None:
+            nxt = child.get_next_sibling()
+            self._search_fav_box.remove(child)
+            child = nxt
+        favs = app_settings.favorite_searches(self._settings)
+        if not favs:
+            self._search_fav_box.append(
+                Gtk.Label(label=i18n.t("find_search_empty"), margin_top=8, margin_bottom=8, margin_start=8, margin_end=8)
+            )
+            return
+        self._search_fav_box.append(Gtk.Label(label=i18n.t("find_search_favorites"), xalign=0, margin_start=8))
+        for item in favs:
+            label = item["query"] or item["content"] or item["folder"]
+            btn = Gtk.Button(label=label)
+            btn.add_css_class("flat")
+            btn.connect("clicked", lambda *_a, row=item: self._apply_search_favorite(row))
+            self._search_fav_box.append(btn)
+
+    def _apply_search_favorite(self, item: dict[str, str]) -> None:
+        if item["folder"]:
+            self._bar.set_folder(Path(item["folder"]))
+        self._query.set_text(item["query"])
+        self._content.set_text(item["content"])
+        self._run()
 
     def _open_row(self, _box: Gtk.ListBox, row: Gtk.ListBoxRow) -> None:
         idx = row.get_index()

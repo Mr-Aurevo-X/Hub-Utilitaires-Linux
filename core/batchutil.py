@@ -173,21 +173,33 @@ def stats_text(root: Path) -> str:
     return "\n".join(lines)
 
 
-def move_copies(groups: list[list[Path]], dest_dir: Path) -> list[Path]:
-    dest_dir.mkdir(parents=True, exist_ok=True)
-    moved: list[Path] = []
+def preview_move_copies(groups: list[list[Path]], dest_dir: Path) -> list[tuple[Path, Path]]:
+    planned: list[tuple[Path, Path]] = []
+    reserved: set[Path] = set()
     for group in groups:
         if len(group) < 2:
             continue
-        ordered = sorted(group, key=lambda item: (item.stat().st_mtime, str(item)))
+        try:
+            ordered = sorted(group, key=lambda item: (item.stat().st_mtime, str(item)))
+        except OSError:
+            continue
         for extra in ordered[1:]:
             target = dest_dir / extra.name
             n = 2
-            while target.exists():
+            while target.exists() or target in reserved:
                 target = dest_dir / f"{extra.stem}_{n}{extra.suffix}"
                 n += 1
-            shutil.move(str(extra), str(target))
-            moved.append(target)
+            reserved.add(target)
+            planned.append((extra, target))
+    return planned
+
+
+def move_copies(groups: list[list[Path]], dest_dir: Path) -> list[Path]:
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    moved: list[Path] = []
+    for extra, target in preview_move_copies(groups, dest_dir):
+        shutil.move(str(extra), str(target))
+        moved.append(target)
     return moved
 
 
