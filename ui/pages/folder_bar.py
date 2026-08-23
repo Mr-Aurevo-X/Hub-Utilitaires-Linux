@@ -10,7 +10,7 @@ from gi.repository import Gtk
 from core import i18n
 from core import settings as app_settings
 from ui import compat
-from . import common as pages_common
+from . import common
 
 
 class FolderBar:

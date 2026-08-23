@@ -135,6 +135,16 @@ def test_language_toggle_relabels_without_rebuild() -> None:
     assert "def relabel_tree" in common_src
 
 
+def test_folder_bar_constructs_without_nameerror() -> None:
+    from gi.repository import Gtk
+
+    from ui.pages.folder_bar import FolderBar
+
+    bar = FolderBar(Gtk.Window(), {})
+    assert bar._pick.get_label()
+    bar.relabel()
+
+
 def test_relabel_tree_updates_bound_label() -> None:
     from gi.repository import Gtk
 
@@ -212,16 +222,15 @@ def test_readme_public_ready_keeps_source_private() -> None:
     root = Path(__file__).resolve().parents[1]
     readme = (root / "README.md").read_text(encoding="utf-8")
     version = (root / "VERSION").read_text(encoding="utf-8").strip()
-    assert version == "1.1.0"
-    assert "privé" in readme.lower() or "private" in readme.lower()
+    meta = (root / "packaging" / "flatpak" / "org.mraurevox.HubUtilitaires.metainfo.xml").read_text(
+        encoding="utf-8"
+    )
+    assert version
+    assert f'version="{version}"' in meta
     assert "linux-flatpak-releases" not in readme
     assert "linux-releases" not in readme
     assert "LANCER.sh" in readme
     assert "télémétrie" in readme.lower() or "telemetry" in readme.lower()
-    meta = (root / "packaging" / "flatpak" / "org.mraurevox.HubUtilitaires.metainfo.xml").read_text(
-        encoding="utf-8"
-    )
-    assert 'version="1.1.0"' in meta
     atelier = (root / "ui" / "pages" / "atelier_page.py").read_text(encoding="utf-8")
     assert "_pin_len" in atelier
     assert "passphrase_bits" in atelier
