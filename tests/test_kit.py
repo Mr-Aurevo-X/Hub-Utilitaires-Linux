@@ -129,6 +129,7 @@ def test_hash_blake2b_and_compare(tmp_path: Path) -> None:
 
 
 def test_pdf_merge_extract_rotate(tmp_path: Path) -> None:
+    pytest.importorskip("pypdf")
     from pypdf import PdfReader, PdfWriter
 
     src_a = tmp_path / "a.pdf"
@@ -360,7 +361,9 @@ def test_image_ops_and_info(tmp_path: Path) -> None:
 
 
 def test_pdf_split_meta_password(tmp_path: Path) -> None:
-    from pypdf import PdfReader, PdfWriter
+    pypdf = pytest.importorskip("pypdf")
+    PdfReader = pypdf.PdfReader
+    PdfWriter = pypdf.PdfWriter
 
     src = tmp_path / "src.pdf"
     writer = PdfWriter()
@@ -514,8 +517,13 @@ def test_language_prompt_first_run_and_legacy(tmp_path: Path, monkeypatch: pytes
     assert again["language"] == "en"
     assert again["language_chosen"] is True
     assert app_settings.needs_language_prompt(again) is False
-    legacy = tmp_path / "hub-utilitaires" / "settings.json"
-    legacy.write_text('{"language": "fr", "last_page": "find"}\n', encoding="utf-8")
+    path = app_settings.settings_path() if hasattr(app_settings, "settings_path") else None
+    if path is None:
+        from core.paths import settings_path
+
+        path = settings_path()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text('{"language": "fr", "last_page": "find"}\n', encoding="utf-8")
     old = app_settings.load_settings()
     assert old["language_chosen"] is False
     assert app_settings.needs_language_prompt(old) is True
