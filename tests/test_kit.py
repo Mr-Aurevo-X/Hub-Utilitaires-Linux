@@ -627,6 +627,8 @@ def test_i18n_has_hero_keys() -> None:
         "file_diff_arc",
         "pdf_inventory",
         "pdf_inventory_save",
+        "atelier_password",
+        "gen_exclude_ambiguous",
         "find_max_results",
         "welcome_lang",
         "welcome_lang_body",

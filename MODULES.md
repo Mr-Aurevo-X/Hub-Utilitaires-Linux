@@ -31,7 +31,8 @@ Préférences = dialogue chrome (`Ctrl+,`), pas une entrée sidebar.
 | LineEndings CRLF ↔ LF (fichier) | Atelier → Texte ; Fichier → réécrire LF |
 | Audit EOL / encodage (dossier) | Lots → Plus |
 | ArchivePeek + create zip/tar.gz + **diff membres** | Fichier → Archive |
-| UuidGen / PassGen / DummyFile / DesktopMaker / Qr / Cron / Gitignore | Atelier → Générer |
+| UuidGen / DummyFile / DesktopMaker / Qr / Cron / Gitignore | Atelier → Générer |
+| PassGen (classes, ambigu, lot, PIN, phrase) | Atelier → Mots de passe |
 | MdPreview | Atelier → Aperçu |
 | Unités / devises / epoch | Atelier Générer |
 | Color picker + palette + historique session | Page Pipette |

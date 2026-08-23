@@ -226,6 +226,16 @@ def convert_base(value: str, src_base: int, dest_base: int) -> str:
     return sign + "".join(reversed(out))
 
 
+_AMBIGUOUS = frozenset("0OIl1")
+_SYMBOLS = "!@#$%^&*()-_=+[]{}"
+
+
+def _filter_alpha(text: str, *, exclude_ambiguous: bool) -> str:
+    if not exclude_ambiguous:
+        return text
+    return "".join(ch for ch in text if ch not in _AMBIGUOUS)
+
+
 def password(
     length: int = 16,
     *,
@@ -233,22 +243,61 @@ def password(
     upper: bool = True,
     digits: bool = True,
     symbols: bool = False,
+    exclude_ambiguous: bool = False,
+    ensure_classes: bool = False,
 ) -> tuple[str, float]:
     size = max(4, min(128, int(length)))
-    alphabet = ""
+    pools: list[str] = []
     if lower:
-        alphabet += string.ascii_lowercase
+        pools.append(_filter_alpha(string.ascii_lowercase, exclude_ambiguous=exclude_ambiguous))
     if upper:
-        alphabet += string.ascii_uppercase
+        pools.append(_filter_alpha(string.ascii_uppercase, exclude_ambiguous=exclude_ambiguous))
     if digits:
-        alphabet += string.digits
+        pools.append(_filter_alpha(string.digits, exclude_ambiguous=exclude_ambiguous))
     if symbols:
-        alphabet += "!@#$%^&*()-_=+[]{}"
-    if not alphabet:
+        pools.append(_SYMBOLS)
+    pools = [pool for pool in pools if pool]
+    if not pools:
         raise GenerateError("aucune classe de caractères")
-    chars = [secrets.choice(alphabet) for _ in range(size)]
+    alphabet = "".join(pools)
+    if ensure_classes:
+        if size < len(pools):
+            raise GenerateError("longueur trop courte pour toutes les classes")
+        chars = [secrets.choice(pool) for pool in pools]
+        chars.extend(secrets.choice(alphabet) for _ in range(size - len(chars)))
+        for index in range(len(chars) - 1, 0, -1):
+            swap = secrets.randbelow(index + 1)
+            chars[index], chars[swap] = chars[swap], chars[index]
+    else:
+        chars = [secrets.choice(alphabet) for _ in range(size)]
     entropy = size * math.log2(len(alphabet))
     return "".join(chars), entropy
+
+
+def password_batch(
+    count: int = 1,
+    *,
+    length: int = 16,
+    lower: bool = True,
+    upper: bool = True,
+    digits: bool = True,
+    symbols: bool = False,
+    exclude_ambiguous: bool = False,
+    ensure_classes: bool = False,
+) -> list[tuple[str, float]]:
+    size = max(1, min(50, int(count)))
+    return [
+        password(
+            length,
+            lower=lower,
+            upper=upper,
+            digits=digits,
+            symbols=symbols,
+            exclude_ambiguous=exclude_ambiguous,
+            ensure_classes=ensure_classes,
+        )
+        for _ in range(size)
+    ]
 
 
 def pin(length: int = 6) -> str:

@@ -39,6 +39,7 @@ class AtelierPage:
         stack.add_titled(self._tab_text(), "text", i18n.t("atelier_text"))
         stack.add_titled(self._tab_encode(), "encode", i18n.t("atelier_encode"))
         stack.add_titled(self._tab_generate(), "gen", i18n.t("atelier_generate"))
+        stack.add_titled(self._tab_password(), "password", i18n.t("atelier_password"))
         stack.add_titled(self._tab_preview(), "preview", i18n.t("atelier_preview"))
         stack.add_titled(self._tab_data(), "data", i18n.t("atelier_data"))
         stack.set_vexpand(True)
@@ -288,27 +289,6 @@ class AtelierPage:
         base_row.append(base_btn)
         extra.append(base_row)
 
-        self._pwd = Gtk.Entry()
-        pwd_row = Gtk.Box(spacing=8)
-        self._pwd_len = Gtk.SpinButton.new_with_range(4, 64, 1)
-        self._pwd_len.set_value(16)
-        self._pwd_sym = Gtk.CheckButton(label=i18n.t("gen_symbols"))
-        pwd_btn = Gtk.Button(label=i18n.t("gen_password"))
-        pwd_btn.connect("clicked", self._make_password)
-        pin_btn = Gtk.Button(label=i18n.t("gen_pin"))
-        pin_btn.connect("clicked", self._make_pin)
-        phrase_btn = Gtk.Button(label=i18n.t("gen_passphrase"))
-        phrase_btn.connect("clicked", self._make_phrase)
-        pwd_row.append(self._pwd_len)
-        pwd_row.append(self._pwd_sym)
-        pwd_row.append(pwd_btn)
-        pwd_row.append(pin_btn)
-        pwd_row.append(phrase_btn)
-        extra.append(self._pwd)
-        extra.append(pwd_row)
-        self._entropy = Gtk.Label(xalign=0)
-        extra.append(self._entropy)
-
         lorem_btn = Gtk.Button(label=i18n.t("gen_lorem"))
         lorem_btn.connect("clicked", self._lorem)
         extra.append(lorem_btn)
@@ -360,6 +340,80 @@ class AtelierPage:
         more = Gtk.Expander(label=i18n.t("group_more"))
         more.set_child(extra)
         box.append(more)
+        return common.scrolled(box)
+
+    def _tab_password(self) -> Gtk.Widget:
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
+        common.padded(box)
+        hint = Gtk.Label(label=i18n.t("atelier_password_hint"), wrap=True, xalign=0)
+        hint.add_css_class("dim-label")
+        box.append(hint)
+
+        opts = Gtk.Box(spacing=8)
+        self._pwd_len = Gtk.SpinButton.new_with_range(4, 128, 1)
+        self._pwd_len.set_value(16)
+        self._pwd_len.set_tooltip_text(i18n.t("gen_length"))
+        self._pwd_batch = Gtk.SpinButton.new_with_range(1, 50, 1)
+        self._pwd_batch.set_value(1)
+        self._pwd_batch.set_tooltip_text(i18n.t("gen_batch"))
+        self._pwd_words = Gtk.SpinButton.new_with_range(3, 12, 1)
+        self._pwd_words.set_value(4)
+        self._pwd_words.set_tooltip_text(i18n.t("gen_words"))
+        opts.append(Gtk.Label(label=i18n.t("gen_length")))
+        opts.append(self._pwd_len)
+        opts.append(Gtk.Label(label=i18n.t("gen_batch")))
+        opts.append(self._pwd_batch)
+        opts.append(Gtk.Label(label=i18n.t("gen_words")))
+        opts.append(self._pwd_words)
+        box.append(opts)
+
+        classes = Gtk.Box(spacing=8)
+        self._pwd_lower = Gtk.CheckButton(label=i18n.t("gen_lower"))
+        self._pwd_lower.set_active(True)
+        self._pwd_upper = Gtk.CheckButton(label=i18n.t("gen_upper"))
+        self._pwd_upper.set_active(True)
+        self._pwd_digits = Gtk.CheckButton(label=i18n.t("gen_digits"))
+        self._pwd_digits.set_active(True)
+        self._pwd_sym = Gtk.CheckButton(label=i18n.t("gen_symbols"))
+        classes.append(self._pwd_lower)
+        classes.append(self._pwd_upper)
+        classes.append(self._pwd_digits)
+        classes.append(self._pwd_sym)
+        box.append(classes)
+
+        extra_opts = Gtk.Box(spacing=8)
+        self._pwd_ambiguous = Gtk.CheckButton(label=i18n.t("gen_exclude_ambiguous"))
+        self._pwd_ambiguous.set_active(True)
+        self._pwd_ensure = Gtk.CheckButton(label=i18n.t("gen_ensure"))
+        self._pwd_ensure.set_active(True)
+        extra_opts.append(self._pwd_ambiguous)
+        extra_opts.append(self._pwd_ensure)
+        box.append(extra_opts)
+
+        actions = Gtk.Box(spacing=8)
+        pwd_btn = Gtk.Button(label=i18n.t("gen_password"))
+        pwd_btn.add_css_class("suggested-action")
+        pwd_btn.connect("clicked", self._make_password)
+        pin_btn = Gtk.Button(label=i18n.t("gen_pin"))
+        pin_btn.connect("clicked", self._make_pin)
+        phrase_btn = Gtk.Button(label=i18n.t("gen_passphrase"))
+        phrase_btn.connect("clicked", self._make_phrase)
+        copy = Gtk.Button(label=i18n.t("copy"))
+        copy.connect("clicked", self._copy_password)
+        actions.append(pwd_btn)
+        actions.append(pin_btn)
+        actions.append(phrase_btn)
+        actions.append(copy)
+        box.append(actions)
+
+        self._entropy = Gtk.Label(xalign=0)
+        self._entropy.add_css_class("dim-label")
+        box.append(self._entropy)
+
+        self._pwd = Gtk.TextView()
+        self._pwd.set_wrap_mode(Gtk.WrapMode.CHAR)
+        self._pwd.set_monospace(True)
+        box.append(common.scrolled(self._pwd))
         return common.scrolled(box)
 
     def _make_uuid(self, *_args: object) -> None:
@@ -426,25 +480,57 @@ class AtelierPage:
             return
         self._unit_out.set_text(out)
 
+    def _pwd_options(self) -> dict[str, bool]:
+        return {
+            "lower": self._pwd_lower.get_active(),
+            "upper": self._pwd_upper.get_active(),
+            "digits": self._pwd_digits.get_active(),
+            "symbols": self._pwd_sym.get_active(),
+            "exclude_ambiguous": self._pwd_ambiguous.get_active(),
+            "ensure_classes": self._pwd_ensure.get_active(),
+        }
+
+    def _show_passwords(self, rows: list[tuple[str, float]]) -> None:
+        _set_buffer(self._pwd, "\n".join(pwd for pwd, _bits in rows))
+        if not rows:
+            self._entropy.set_text("")
+            return
+        bits = rows[0][1]
+        if len(rows) == 1:
+            self._entropy.set_text(f"{bits:.1f} bits")
+            return
+        self._entropy.set_text(f"{len(rows)} × {bits:.1f} bits")
+
     def _make_password(self, *_args: object) -> None:
         try:
-            pwd, entropy = generate.password(int(self._pwd_len.get_value()), symbols=self._pwd_sym.get_active())
+            rows = generate.password_batch(
+                int(self._pwd_batch.get_value()),
+                length=int(self._pwd_len.get_value()),
+                **self._pwd_options(),
+            )
         except generate.GenerateError as exc:
             show_toast(self._toast, str(exc), 5)
             return
-        self._pwd.set_text(pwd)
-        self._entropy.set_text(f"{entropy:.1f} bits")
+        self._show_passwords(rows)
 
     def _make_pin(self, *_args: object) -> None:
-        self._pwd.set_text(generate.pin(int(self._pwd_len.get_value())))
+        count = int(self._pwd_batch.get_value())
+        pins = [generate.pin(int(self._pwd_len.get_value())) for _ in range(count)]
+        _set_buffer(self._pwd, "\n".join(pins))
         self._entropy.set_text("")
 
     def _make_phrase(self, *_args: object) -> None:
-        self._pwd.set_text(generate.passphrase(4))
+        count = int(self._pwd_batch.get_value())
+        words = int(self._pwd_words.get_value())
+        phrases = [generate.passphrase(words) for _ in range(count)]
+        _set_buffer(self._pwd, "\n".join(phrases))
         self._entropy.set_text("")
 
+    def _copy_password(self, *_args: object) -> None:
+        common.copy_text(_buffer_text(self._pwd), self._toast)
+
     def _lorem(self, *_args: object) -> None:
-        self._pwd.set_text(generate.lorem(paragraphs=2, sentences=3))
+        self._set_gen_out(generate.lorem(paragraphs=2, sentences=3))
 
     def _qr_save(self, *_args: object) -> None:
         text = self._qr.get_text()

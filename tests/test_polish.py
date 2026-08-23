@@ -97,3 +97,8 @@ def test_polish_ui_hooks_present() -> None:
     assert "save_file" not in pdf_src.split("def _inventory")[1].split("def _")[0]
     assert "present_alert" in find_src
     assert "regex=regex" in find_src
+    atelier_src = (root / "ui" / "pages" / "atelier_page.py").read_text(encoding="utf-8")
+    assert '_tab_password()' in atelier_src
+    assert "atelier_password" in atelier_src
+    gen_tab = atelier_src.split("def _tab_generate")[1].split("def _")[0]
+    assert "gen_password" not in gen_tab

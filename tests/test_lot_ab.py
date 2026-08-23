@@ -294,3 +294,35 @@ def test_relink_symlink_updates_target(tmp_path: Path) -> None:
     assert link.is_symlink()
     assert link.resolve() == new.resolve()
     assert link.read_text(encoding="utf-8") == "new"
+
+
+def test_password_excludes_ambiguous_and_ensures_classes() -> None:
+    from core import generate
+
+    for _ in range(20):
+        pwd, entropy = generate.password(
+            16,
+            lower=True,
+            upper=True,
+            digits=True,
+            symbols=True,
+            exclude_ambiguous=True,
+            ensure_classes=True,
+        )
+        assert len(pwd) == 16
+        assert entropy > 0
+        assert not any(ch in "0OIl1" for ch in pwd)
+        assert any(ch.islower() for ch in pwd)
+        assert any(ch.isupper() for ch in pwd)
+        assert any(ch.isdigit() for ch in pwd)
+        assert any(ch in "!@#$%^&*()-_=+[]{}" for ch in pwd)
+
+
+def test_password_batch_and_passphrase_count() -> None:
+    from core import generate
+
+    rows = generate.password_batch(3, length=10, symbols=False)
+    assert len(rows) == 3
+    assert all(len(pwd) == 10 and bits > 0 for pwd, bits in rows)
+    phrase = generate.passphrase(5)
+    assert len(phrase.split("-")) == 5
