@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2026 Mr-Aurevo-X -->
+<component type="desktop-application">
+  <id>org.mraurevox.HubUtilitaires</id>
+  <name>Hub Utilitaires</name>
+  <summary>Linux local tools</summary>
+  <description>
+    <p>
+      Recherche, pipette, renommage, hash, images, PDF, atelier, fichier,
+      diff texte, secrets, snippets, lots et carte disque locale.
+      Traitement 100 % local.
+    </p>
+    <p>
+      Aucune télémétrie. La seule connexion réseau éventuelle est la
+      vérification des mises à jour GitHub (désactivable).
+    </p>
+  </description>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-or-later</project_license>
+  <developer_name>Mr-Aurevo-X</developer_name>
+  <url type="homepage">https://github.com/Mr-Aurevo-X/Hub Utilitaires</url>
+  <launchable type="desktop-id">org.mraurevox.HubUtilitaires.desktop</launchable>
+  <provides>
+    <id>org.mraurevox.HubUtilitaires.desktop</id>
+    <binary>hub-utilitaires</binary>
+  </provides>
+  <content_rating type="oars-1.1"/>
+  <releases>
+    <release version="2.3.2" date="2026-08-23">
+      <description>
+        <p>2.3.2 : fix affichage sidebar (plus de ListBoxRow imbriqués).</p>
+      </description>
+    </release>
+    <release version="2.3.1" date="2026-08-23">
+      <description>
+        <p>2.3.1 : fix crash menu dossiers récents (GtkLabel margin).</p>
+      </description>
+    </release>
+    <release version="2.3.0" date="2026-08-23">
+      <description>
+        <p>2.3.0 : sidebar repliable 5 sections, enrichissements pages (Lots, Fichier, Atelier, Hash, etc.), workset récents/favoris, Ctrl+K.</p>
+      </description>
+    </release>
+    <release version="2.2.10" date="2026-08-22">
+      <description>
+        <p>2.2.10 : commandes install/MAJ incluent le raccourci menu Flatpak.</p>
+      </description>
+    </release>
+    <release version="2.2.9" date="2026-08-22">
+      <description>
+        <p>2.2.9 : fix warnings GtkGizmo slider (langue FR/EN).</p>
+      </description>
+    </release>
+    <release version="2.2.8" date="2026-08-22">
+      <description>
+        <p>2.2.8 : fix GTK 4.6 — slider langue sans toggle_css_class.</p>
+      </description>
+    </release>
+    <release version="2.2.7" date="2026-08-22">
+      <description>
+        <p>2.2.7 : sync Uni-UI (slider langue, don dans légal, dialogue MAJ amélioré).</p>
+      </description>
+    </release>
+    <release version="2.2.6" date="2026-08-22">
+      <description>
+        <p>2.2.6 : sidebar toujours visible (retrait du repli/masquage défaillant).</p>
+      </description>
+    </release>
+    <release version="2.2.5" date="2026-08-22">
+      <description>
+        <p>2.2.5 : correctifs CSS GTK (sidebar repliée, scrollbars sans warnings).</p>
+      </description>
+    </release>
+    <release version="2.2.4" date="2026-08-22">
+      <description>
+        <p>2.2.4 : shell Uni-UI ui_kit (sidebar repliable, légal/don/MAJ intégrés).</p>
+      </description>
+    </release>
+    <release version="2.2.2" date="2026-08-22">
+      <description>
+        <p>2.2.2 : Flatpak publié sur linux-flatpak-releases (curl public sans token).</p>
+      </description>
+    </release>
+    <release version="2.2.1" date="2026-08-22">
+      <description>
+        <p>2.2.1 : version Flatpak fiable, notification MAJ avec lien copiable (pas d’install auto).</p>
+      </description>
+    </release>
+    <release version="2.2.0" date="2026-08-22">
+      <description>
+        <p>2.2.0 : Uni-UI (Void Glow), Apparence dans Préférences, affichage Hub Utilitaires.</p>
+      </description>
+    </release>
+    <release version="2.1.0" date="2026-08-18">
+      <description>
+        <p>2.1.0 : diff texte, vérification de manifeste, images max côté / dossier sortie, renommage copies + mtime, JSONL, CSV fusion/coupe, SecretScan, Snippets.</p>
+      </description>
+    </release>
+    <release version="2.0.2" date="2026-08-18">
+      <description>
+        <p>2.0.2 : au premier lancement, choix de langue (Français / English) enregistré dans les préférences.</p>
+      </description>
+    </release>
+    <release version="2.0.1" date="2026-08-18">
+      <description>
+        <p>2.0.1 : English s’applique tout de suite (ComboBoxText), plus seulement après Enregistrer.</p>
+      </description>
+    </release>
+    <release version="2.0.0" date="2026-08-18">
+      <description>
+        <p>2.0 : workset partagé (dossier + sélection), nav Quotidien / Fichier / Atelier, Lots par groupe, undo rename persisté, plafonds visibles.</p>
+      </description>
+    </release>
+    <release version="1.1.0" date="2026-08-18">
+      <description>
+        <p>1.1 : dossier partagé Recherche/Renommer/Lots, envoi de sélection, groupes Lots, lazy-load, langue live, plafonds visibles.</p>
+      </description>
+    </release>
+    <release version="1.0.0" date="2026-08-15">
+      <description>
+        <p>1.0 : atelier Données, Fichier, Lots, carte disque locale, pack outils enrichi. 100 % local.</p>
+      </description>
+    </release>
+    <release version="0.2.6" date="2026-08-15">
+      <description>
+        <p>Canal MAJ : version de test après le correctif d’ouverture natif Mint 0.2.5.</p>
+      </description>
+    </release>
+    <release version="0.2.5" date="2026-08-15">
+      <description>
+        <p>Natif Mint : cairo+X11+llvmpipe, instance NON_UNIQUE, hold jusqu’à fenêtre mappée (plus d’exit=0 silencieux).</p>
+      </description>
+    </release>
+    <release version="0.2.4" date="2026-08-15">
+      <description>
+        <p>Natif Mint/VM : GSK cairo si DRI2/EGL n’authentifie pas (fenêtre GTK4 invisible).</p>
+      </description>
+    </release>
+    <release version="0.2.3" date="2026-08-15">
+      <description>
+        <p>Natif Mint 21.3 : l’atelier n’utilise plus Adw.ViewStack (absent en libadwaita 1.1).</p>
+      </description>
+    </release>
+    <release version="0.2.2" date="2026-08-15">
+      <description>
+        <p>Correctif démarrage : la page PDF plantait (import manquant), clic menu sans fenêtre.</p>
+      </description>
+    </release>
+    <release version="0.2.1" date="2026-08-15">
+      <description>
+        <p>Natif Linux Mint 21.3 / Ubuntu 22.04 (GTK 4.6, libadwaita 1.1, Python 3.10).</p>
+      </description>
+    </release>
+    <release version="0.2.0" date="2026-08-15">
+      <description>
+        <p>PDF, atelier (regex, JSON/YAML, JWT local, QR, unités), hash BLAKE2, EXIF.</p>
+      </description>
+    </release>
+    <release version="0.1.0" date="2026-08-15">
+      <description>
+        <p>Première version : recherche, pipette, renommage, hash, images. MAJ GitHub optionnelle.</p>
+      </description>
+    </release>
+  </releases>
+</component>

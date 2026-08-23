@@ -1,0 +1,75 @@
+# linux-flatpak-releases
+
+Releases **Flatpak** publiques pour **toutes** les apps Linux Mr-Aurevo-X (pas de sources).  
+Apps actuelles : **Crypto Tracker** + **Gest Linux Pro** + **Hub Utilitaires** (ne pas retirer une app de ce README).
+
+Canal natif (Crypto Tracker zips) : https://github.com/Mr-Aurevo-X/linux-releases — **Gest + Kit : Flatpak uniquement**
+
+| App | Dernier tag | Paquet |
+| --- | --- | --- |
+| **Crypto Tracker** | [`crypto-tracker-v@CT_VERSION@`](https://github.com/Mr-Aurevo-X/linux-flatpak-releases/releases/tag/crypto-tracker-v@CT_VERSION@) | `org.mraurevox.CryptoTracker.flatpak` |
+| **Gest Linux Pro** | [`Gest_Linux_Pro-v@GEST_VERSION@`](https://github.com/Mr-Aurevo-X/linux-flatpak-releases/releases/tag/Gest_Linux_Pro-v@GEST_VERSION@) | `org.mraurevox.GestLinuxPro.flatpak` |
+| **Hub Utilitaires** | [`Hub-Utilitaires-v@KIT_VERSION@`](https://github.com/Mr-Aurevo-X/linux-flatpak-releases/releases/tag/Hub-Utilitaires-v@KIT_VERSION@) | `org.mraurevox.HubUtilitaires.flatpak` |
+
+## Crypto Tracker @CT_VERSION@
+
+```bash
+curl -fL -o org.mraurevox.CryptoTracker.flatpak \
+  https://github.com/Mr-Aurevo-X/linux-flatpak-releases/releases/download/crypto-tracker-v@CT_VERSION@/org.mraurevox.CryptoTracker.flatpak
+flatpak install --user -y ./org.mraurevox.CryptoTracker.flatpak
+flatpak run org.mraurevox.CryptoTracker
+```
+
+Prérequis : [Flatpak](https://flatpak.org/setup/) + Flathub + runtime Freedesktop 25.08.  
+Données : `~/.local/share/crypto-tracker/`
+
+### Mentions légales Crypto Tracker (CGU / RGPD)
+
+- **Copyright © 2026 Mr-Aurevo-X.** Logiciel propriétaire.
+- **CGU :** fourni « en l’état » ; pas un conseil en investissement ; pas de copie / redistribution sans autorisation.
+- **RGPD :** aucune collecte par Mr-Aurevo-X. Fichiers locaux `~/.local/share/crypto-tracker/`. Prix : CoinGecko / Binance. MAJ GitHub (désactivable).
+- Texte complet : [`LEGAL-Crypto-Tracker.md`](https://github.com/Mr-Aurevo-X/linux-flatpak-releases/blob/main/LEGAL-Crypto-Tracker.md) et [`LEGAL.md`](https://github.com/Mr-Aurevo-X/linux-flatpak-releases/releases/download/crypto-tracker-v@CT_VERSION@/LEGAL.md) (joint à la release). App : Paramètres → CGU / RGPD.
+
+## Gest Linux Pro @GEST_VERSION@
+
+**© 2026 Mr-Aurevo-X** · GPL-3.0-or-later · 100 % local (sauf vérif MAJ GitHub, désactivable)
+
+```bash
+curl -fL -o org.mraurevox.GestLinuxPro.flatpak \
+  https://github.com/Mr-Aurevo-X/linux-flatpak-releases/releases/download/Gest_Linux_Pro-v@GEST_VERSION@/org.mraurevox.GestLinuxPro.flatpak
+flatpak install --user -y ./org.mraurevox.GestLinuxPro.flatpak
+flatpak run org.mraurevox.GestLinuxPro
+```
+
+Prérequis : Flatpak + Flathub + runtime `org.gnome.Platform//49`.
+
+### Mentions légales Gest Linux Pro (CGU / RGPD)
+
+- **Copyright © 2026 Mr-Aurevo-X.** Code sous GPL-3.0-or-later.
+- **CGU :** logiciel « en l’état » ; vous êtes responsable des actions système (pkexec, services, pare-feu, clichés, paquets). Redistribution sous GPL.
+- **RGPD :** aucune collecte par Mr-Aurevo-X. Fichiers locaux `~/.config/gest-linux-pro/`, `~/.local/share/gest-linux-pro/`. MAJ GitHub désactivable.
+- Texte complet : [`LEGAL-Gest-Linux-Pro.md`](https://github.com/Mr-Aurevo-X/linux-flatpak-releases/blob/main/LEGAL-Gest-Linux-Pro.md).
+
+## Hub Utilitaires @KIT_VERSION@
+
+**© 2026 Mr-Aurevo-X** · GPL-3.0-or-later · 100 % local (sauf vérif MAJ GitHub, désactivable)
+
+```bash
+curl -fL -o org.mraurevox.HubUtilitaires.flatpak \
+  https://github.com/Mr-Aurevo-X/linux-flatpak-releases/releases/download/Hub-Utilitaires-v@KIT_VERSION@/org.mraurevox.HubUtilitaires.flatpak
+flatpak install --user -y ./org.mraurevox.HubUtilitaires.flatpak
+flatpak run org.mraurevox.HubUtilitaires
+```
+
+Recherche, pipette, rename, hash (SHA-256/512/BLAKE2), images/EXIF, PDF, atelier (texte / encode / QR).  
+Prérequis : Flatpak + Flathub + runtime `org.gnome.Platform//49`.  
+Données : `~/.config/hub-utilitaires/`, `~/.local/share/hub-utilitaires/`.
+
+### Mentions légales Hub Utilitaires (CGU / RGPD)
+
+- **Copyright © 2026 Mr-Aurevo-X.** Code sous GPL-3.0-or-later.
+- **CGU :** logiciel « en l’état » ; vous êtes responsable des fichiers que vous renommez, redimensionnez ou ouvrez. Redistribution sous GPL.
+- **RGPD :** aucune collecte par Mr-Aurevo-X. Pas de télémétrie. MAJ GitHub désactivable.
+- Texte complet : [`LEGAL-Hub-Utilitaires.md`](https://github.com/Mr-Aurevo-X/linux-flatpak-releases/blob/main/LEGAL-Hub-Utilitaires.md).
+
+© 2026 Mr-Aurevo-X. Crypto Tracker : propriétaire. Gest Linux Pro et Hub Utilitaires : GPL-3.0-or-later.

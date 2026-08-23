@@ -1,0 +1,62 @@
+app-id: org.mraurevox.HubUtilitaires
+runtime: org.gnome.Platform
+runtime-version: "49"
+sdk: org.gnome.Sdk
+command: hub-utilitaires
+finish-args:
+  - --share=ipc
+  - --share=network
+  - --socket=fallback-x11
+  - --socket=wayland
+  - --device=dri
+  - --filesystem=home
+  - --filesystem=xdg-config/hub-utilitaires:create
+  - --filesystem=xdg-data/hub-utilitaires:create
+  - --talk-name=org.freedesktop.Flatpak
+  - --talk-name=org.freedesktop.Notifications
+modules:
+  - name: python3-pillow
+    buildsystem: simple
+    build-options:
+      build-args:
+        - --share=network
+    build-commands:
+      - python3 -m pip install --prefix=${FLATPAK_DEST} "Pillow>=10.0,<13"
+  - name: python3-pypdf
+    buildsystem: simple
+    build-options:
+      build-args:
+        - --share=network
+    build-commands:
+      - python3 -m pip install --prefix=${FLATPAK_DEST} "pypdf>=5.1,<7"
+  - name: python3-yaml
+    buildsystem: simple
+    build-options:
+      build-args:
+        - --share=network
+    build-commands:
+      - python3 -m pip install --prefix=${FLATPAK_DEST} "PyYAML>=6.0.1,<7"
+  - name: python3-segno
+    buildsystem: simple
+    build-options:
+      build-args:
+        - --share=network
+    build-commands:
+      - python3 -m pip install --prefix=${FLATPAK_DEST} "segno>=1.6,<2"
+  - name: hub-utilitaires
+    buildsystem: simple
+    build-commands:
+      - install -d ${FLATPAK_DEST}/share/hub-utilitaires
+      - find core ui -type d -name __pycache__ -prune -exec rm -rf {} +
+      - find core ui -type f -name '*.pyc' -delete
+      - cp -a main.py VERSION LICENSE COPYRIGHT LEGAL.md README.md requirements.txt core ui ui_kit ${FLATPAK_DEST}/share/hub-utilitaires/
+      - install -Dm755 packaging/flatpak/hub-utilitaires.in ${FLATPAK_DEST}/bin/hub-utilitaires
+      - install -Dm644 packaging/flatpak/org.mraurevox.HubUtilitaires.desktop
+        ${FLATPAK_DEST}/share/applications/org.mraurevox.HubUtilitaires.desktop
+      - install -Dm644 packaging/flatpak/org.mraurevox.HubUtilitaires.metainfo.xml
+        ${FLATPAK_DEST}/share/metainfo/org.mraurevox.HubUtilitaires.metainfo.xml
+      - install -Dm644 packaging/flatpak/org.mraurevox.HubUtilitaires.png
+        ${FLATPAK_DEST}/share/icons/hicolor/128x128/apps/org.mraurevox.HubUtilitaires.png
+    sources:
+      - type: dir
+        path: ../..

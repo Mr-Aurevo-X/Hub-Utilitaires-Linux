@@ -1,0 +1,20 @@
+# Files included in MrAurevoX_Kit release tarballs
+VERSION
+LICENSE
+COPYRIGHT
+LEGAL.md
+README.md
+MODULES.md
+requirements.txt
+main.py
+install.sh
+uninstall.sh
+LANCER.sh
+INSTALLER-RACCOURCI.sh
+Hub-Utilitaires.desktop
+Makefile
+MANIFEST
+core/
+ui/
+ui_kit/
+packaging/

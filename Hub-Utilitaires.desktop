@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Hub Utilitaires
+Comment=Boite d'outils locale (recherche, pipette, hash, images, PDF, atelier, carte)
+Exec=bash "@INSTALL_DIR@/LANCER.sh"
+Path=@INSTALL_DIR@
+Icon=org.mraurevox.HubUtilitaires
+Terminal=false
+Categories=Utility;GTK;
+StartupNotify=true
+StartupWMClass=org.mraurevox.HubUtilitaires

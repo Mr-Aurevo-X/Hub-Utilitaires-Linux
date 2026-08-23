@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Hub Utilitaires
+Comment=Boîte d'outils locale (recherche, pipette, hash, images, PDF, atelier, carte)
+Comment[en]=Local toolkit (search, color picker, hash, images, PDF, workshop, disk map)
+Exec=hub-utilitaires
+Icon=org.mraurevox.HubUtilitaires
+Terminal=false
+Categories=Utility;GTK;
+StartupNotify=true
+StartupWMClass=org.mraurevox.HubUtilitaires
