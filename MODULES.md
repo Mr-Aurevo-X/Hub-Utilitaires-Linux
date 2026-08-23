@@ -2,43 +2,57 @@
 
 Inventaire métier. Pas de code mort ici — idées et mapping seulement.
 
-## Navigation (2.3)
+## Navigation
 
-Sidebar **repliable** en 5 sections : Explorateur · Média & intégrité · Fichier · Studio · Audit (`ui/nav_sidebar.py`).
+Sidebar **repliable** en 4 sections (`ui/nav.py`) : Explorateur · Média & intégrité · Fichier · Studio.
 
-## Déjà dans le Kit (ne pas recoder / ne pas cloner)
-
-| Idée brief | Où c’est |
+| Groupe | Pages |
 | --- | --- |
-| Recherche fichiers (+ export CSV/JSON) | Page Recherche |
+| Explorateur | Recherche, Renommer, Lots, Carte |
+| Média & intégrité | Hash, Images, PDF |
+| Fichier | Fichier (inspect + archive) |
+| Studio | Pipette, Atelier |
+
+Préférences = dialogue chrome (`Ctrl+,`), pas une entrée sidebar.
+
+## Déjà dans le hub (ne pas recoder)
+
+| Idée | Où c’est |
+| --- | --- |
+| Recherche fichiers (+ export CSV/JSON, replace aperçu) | Page Recherche |
 | Hash un-fichier + compare A/B + dossiers + SHA256SUMS | Page Hash |
-| Manifeste `.sha256` (écrire) | Hash + Lots |
-| Vérifier manifeste OK / MANQUANT / DIFF | Hash |
-| Images batch + icônes PNG multi-tailles + EXIF rotate + compare | Page Images |
+| Manifeste `.sha256` (écrire / vérifier) | Hash + Lots |
+| Images batch + icônes PNG + EXIF rotate + compare | Page Images |
 | Strip EXIF / GPS | Images (case EXIF) |
-| Renommer (+ `{hash8}`, presets, CSV) | Page Renommer |
-| Undo renommage | `~/.local/share/hub-utilitaires/rename-undo.json` |
-| PDF (+ réordonner pages, extraire images) | Page PDF |
-| Carte disque | Page Carte |
-| PrettyJSON / minify / valider | Atelier → Encode (+ `.env` inspect) |
-| JSONL pretty / min / valider | Atelier → Encode |
-| LineEndings CRLF ↔ LF | Atelier → Texte ; Fichier → réécrire LF |
-| ArchivePeek + **create** zip/tar.gz | Fichier → Archive |
-| UuidGen / PassGen / DummyFile / DesktopMaker / QrRead / Cron / Gitignore | Atelier → Générer |
+| Renommer (`{hash8}`, presets, CSV, undo) | Page Renommer |
+| PDF (fusion, pages, inventaire CSV, extraire images) | Page PDF |
+| Carte disque + treemap | Page Carte |
+| PrettyJSON / minify / JSONL / JWT / `.env` inspect | Atelier → Encode |
+| LineEndings CRLF ↔ LF (fichier) | Atelier → Texte ; Fichier → réécrire LF |
+| Audit EOL / encodage (dossier) | Lots → Plus |
+| ArchivePeek + create zip/tar.gz + **diff membres** | Fichier → Archive |
+| UuidGen / PassGen / DummyFile / DesktopMaker / Qr / Cron / Gitignore | Atelier → Générer |
 | MdPreview | Atelier → Aperçu |
-| QR generate | Atelier → Générer (`segno`) |
 | Unités / devises / epoch | Atelier Générer |
-| Color picker + export palette + historique session | Page Pipette |
-| CsvTools fusion / coupe N lignes | Atelier → Données |
-| TextDiff (+ ignore espaces/EOL) | Page Diff texte |
-| SecretScan + export rapport | Page Secrets |
-| Snippets (+ tags, import/export JSON) | Page Snippets |
-| BrokenLinks | Lots |
-| TrashPeek | Lots |
+| Color picker + palette + historique session | Page Pipette |
+| CsvTools fusion / coupe | Atelier → Données |
+| Broken **symlinks** + TrashPeek + stats + dupes | Lots |
+| Broken **doc links** locaux (MD/HTML, pas HTTP) | Lots → Plus |
+| Quasi-doublons images (W×H×octets) | Lots → Plus |
 | MimeGuess (magic bytes) | Fichier → Inspect |
-| Dossiers récents / favoris | FolderBar |
+| Dossiers récents / favoris + recherches épinglées | FolderBar / Recherche |
 | Journal opérations | `core/opslog.py` + Préférences |
-| Palette commandes Ctrl+K | Fenêtre principale |
+| Palette commandes Ctrl+K | Fenêtre principale (saut de page) |
+
+## Hubs frères (ne pas recâbler ici)
+
+| Outil | Hub |
+| --- | --- |
+| Diff texte (page dédiée) | Hub-Dev — envoi via `core/cross_hub.py` |
+| Snippets | Hub-Dev |
+| SecretScan (UI) | Hub-Sécurité |
+
+`core/secretscan.py` et `core/snippets.py` restent des libs testées **sans page**.
 
 ## Interdit
 

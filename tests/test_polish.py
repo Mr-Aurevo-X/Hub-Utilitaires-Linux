@@ -81,5 +81,12 @@ def test_polish_ui_hooks_present() -> None:
     disk_src = (root / "ui" / "pages" / "disk_page.py").read_text(encoding="utf-8")
     assert "toggle_favorite_search" in find_src
     assert "preview_move_copies" in lots_src
+    assert "broken_doc_links" in lots_src
+    assert "eol_audit_text" in lots_src
+    assert "near_duplicate_images" in lots_src
     assert "set_draw_func" in disk_src
     assert "treemap_rects" in disk_src
+    file_src = (root / "ui" / "pages" / "file_page.py").read_text(encoding="utf-8")
+    pdf_src = (root / "ui" / "pages" / "pdf_page.py").read_text(encoding="utf-8")
+    assert "diff_archive_members" in file_src
+    assert "pdfutil.inventory" in pdf_src

@@ -106,6 +106,7 @@ class FilePage:
                 common.button_row(i18n.t("file_make_zip"), self._make_zip),
                 common.button_row(i18n.t("file_make_tar"), self._make_tar),
                 common.button_row(i18n.t("file_extract"), self._extract),
+                common.button_row(i18n.t("file_diff_arc"), self._diff_arc),
             ],
         )
         box.append(grid)
@@ -275,6 +276,26 @@ class FilePage:
             "archive.tar.gz",
             lambda dest: self._bg(lambda: str(fileutil.create_tar_gz(files, dest)), self._arc_out),
         )
+
+    def _diff_arc(self, *_args: object) -> None:
+        files = list(self._archive_files)
+        if len(files) < 2 and self._path is not None and self._path_b is not None:
+            files = [self._path, self._path_b]
+        if len(files) < 2:
+            show_toast(self._toast, i18n.t("add_files"), 4)
+            return
+
+        def work() -> str:
+            diff = fileutil.diff_archive_members(files[0], files[1])
+            lines = ["only_a:"]
+            lines.extend(diff["only_a"] or ["—"])
+            lines.append("only_b:")
+            lines.extend(diff["only_b"] or ["—"])
+            lines.append("both:")
+            lines.extend(diff["both"] or ["—"])
+            return "\n".join(lines)
+
+        self._bg(work, self._arc_out)
 
     def _extract(self, *_args: object) -> None:
         if not self._archive_files:

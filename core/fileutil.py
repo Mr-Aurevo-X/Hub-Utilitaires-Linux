@@ -284,6 +284,16 @@ def copy_to(src: Path, dest_dir: Path) -> Path:
     return dest
 
 
+def diff_archive_members(left: Path, right: Path) -> dict[str, list[str]]:
+    only_a = set(list_archive(left))
+    only_b = set(list_archive(right))
+    return {
+        "only_a": sorted(only_a - only_b),
+        "only_b": sorted(only_b - only_a),
+        "both": sorted(only_a & only_b),
+    }
+
+
 def list_archive(path: Path) -> list[str]:
     suffix = "".join(path.suffixes).lower()
     try:

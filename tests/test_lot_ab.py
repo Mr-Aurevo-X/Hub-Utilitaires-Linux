@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from core import codec, hashutil, rename, resize, snippets, textutil
+from core import batchutil, codec, fileutil, hashutil, pdfutil, rename, resize, snippets, textutil
 from core import secretscan
 
 
@@ -151,3 +151,85 @@ def test_snippets_put_list_delete(tmp_path: Path, monkeypatch: pytest.MonkeyPatc
     assert snippets.get("sig") == "Cordialement"
     snippets.delete("sig")
     assert snippets.list_all() == []
+
+
+def test_broken_doc_links_reports_missing_skips_http(tmp_path: Path) -> None:
+    (tmp_path / "ok.md").write_text("# ok\n", encoding="utf-8")
+    src = tmp_path / "readme.md"
+    src.write_text(
+        "[ok](ok.md)\n[gone](missing.md)\n[web](https://example.com/x)\n[mail](mailto:a@b.c)\n",
+        encoding="utf-8",
+    )
+    html = tmp_path / "page.html"
+    html.write_text('<a href="nope.html">x</a><img src="ok.md">', encoding="utf-8")
+    hits = batchutil.broken_doc_links(tmp_path)
+    assert src in hits.paths
+    assert html in hits.paths
+    assert (tmp_path / "ok.md") not in hits.paths
+    text = batchutil.broken_doc_links_text(tmp_path)
+    assert "missing.md" in text
+    assert "nope.html" in text
+    assert "example.com" not in text
+
+
+def test_eol_audit_classifies_lf_and_mixed(tmp_path: Path) -> None:
+    lf = tmp_path / "unix.txt"
+    mixed = tmp_path / "mixed.txt"
+    lf.write_bytes(b"a\nb\n")
+    mixed.write_bytes(b"a\r\nb\nc\n")
+    (tmp_path / "bin.dat").write_bytes(b"\x00\x01")
+    rows = {row["path"]: row for row in batchutil.eol_audit(tmp_path)}
+    assert rows[str(lf)]["endings"] == "lf"
+    assert rows[str(mixed)]["endings"] == "mixed"
+    assert str(tmp_path / "bin.dat") not in rows
+    assert rows[str(lf)]["encoding"] == "utf-8"
+
+
+def test_near_duplicate_images_groups_same_wxh_bytes(tmp_path: Path) -> None:
+    from PIL import Image
+
+    a = tmp_path / "a.png"
+    b = tmp_path / "b.png"
+    other = tmp_path / "other.png"
+    Image.new("RGB", (16, 8), (9, 8, 7)).save(a)
+    Image.new("RGB", (16, 8), (9, 8, 7)).save(b)
+    Image.new("RGB", (8, 8), (1, 2, 3)).save(other)
+    hits = batchutil.near_duplicate_images(tmp_path)
+    groups = [sorted(group, key=lambda item: item.name) for group in hits.groups]
+    assert [a, b] in groups
+    assert all(other not in group for group in hits.groups)
+
+
+def test_diff_archive_members_only_a_only_b(tmp_path: Path) -> None:
+    shared = tmp_path / "shared.txt"
+    extra_a = tmp_path / "only_a.txt"
+    extra_b = tmp_path / "only_b.txt"
+    shared.write_text("s", encoding="utf-8")
+    extra_a.write_text("a", encoding="utf-8")
+    extra_b.write_text("b", encoding="utf-8")
+    zip_a = tmp_path / "a.zip"
+    zip_b = tmp_path / "b.zip"
+    fileutil.create_zip([shared, extra_a], zip_a)
+    fileutil.create_zip([shared, extra_b], zip_b)
+    diff = fileutil.diff_archive_members(zip_a, zip_b)
+    assert diff["only_a"] == ["only_a.txt"]
+    assert diff["only_b"] == ["only_b.txt"]
+    assert diff["both"] == ["shared.txt"]
+
+
+def test_pdf_inventory_ok_and_error_row(tmp_path: Path) -> None:
+    from pypdf import PdfWriter
+
+    ok = tmp_path / "ok.pdf"
+    writer = PdfWriter()
+    writer.add_blank_page(width=72, height=72)
+    writer.add_metadata({"/Title": "Inv"})
+    with ok.open("wb") as handle:
+        writer.write(handle)
+    bad = tmp_path / "bad.pdf"
+    bad.write_text("not a pdf", encoding="utf-8")
+    csv_text = pdfutil.inventory([ok, bad])
+    lines = [line for line in csv_text.splitlines() if line]
+    assert lines[0] == "path,pages,bytes,encrypted,title"
+    assert any(line.startswith(str(ok)) and ",1," in line and "Inv" in line for line in lines[1:])
+    assert any(line.startswith(str(bad)) and ",ERROR," in line for line in lines[1:])

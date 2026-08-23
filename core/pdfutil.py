@@ -1,7 +1,12 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 from __future__ import annotations
 
+import csv
+import io
+import os
 from pathlib import Path
+
+from core.find import SKIP_DIRS
 
 try:
     from pypdf import PdfReader, PdfWriter
@@ -99,6 +104,41 @@ def info(src: Path, password: str = "") -> dict[str, object]:
         raise
     except Exception as exc:  # noqa: BLE001
         raise PdfError(str(exc)) from exc
+
+
+def list_pdfs(root: Path, *, limit: int = 4000) -> list[Path]:
+    if not root.is_dir():
+        raise PdfError("dossier invalide")
+    found: list[Path] = []
+    for dirpath, dirnames, filenames in os.walk(root, followlinks=False):
+        dirnames[:] = [name for name in dirnames if name not in SKIP_DIRS and not name.startswith(".")]
+        for name in sorted(filenames):
+            if name.startswith("."):
+                continue
+            path = Path(dirpath) / name
+            if path.suffix.lower() != ".pdf":
+                continue
+            found.append(path)
+            if len(found) >= max(1, int(limit)):
+                return found
+    return found
+
+
+def inventory(paths: list[Path]) -> str:
+    buf = io.StringIO()
+    writer = csv.writer(buf)
+    writer.writerow(["path", "pages", "bytes", "encrypted", "title"])
+    for path in paths:
+        try:
+            size = path.stat().st_size
+        except OSError:
+            size = ""
+        try:
+            data = info(path)
+            writer.writerow([str(path), data["pages"], size, data["encrypted"], data["title"]])
+        except (OSError, PdfError):
+            writer.writerow([str(path), "ERROR", size, "", ""])
+    return buf.getvalue()
 
 
 def merge(paths: list[Path], dest: Path, *, order: list[int] | None = None) -> Path:

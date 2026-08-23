@@ -6,15 +6,25 @@ from __future__ import annotations
 import csv
 import io
 import os
+import re
 import shutil
 from collections import defaultdict
 from collections.abc import Callable, Iterator
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
+from urllib.parse import unquote, urlparse
 
-from core.find import SKIP_DIRS, PathHits, empty_dirs
+from core import fileutil, resize
+from core.find import SKIP_DIRS, TEXT_EXT, PathHits, empty_dirs
 from core.hashutil import checksums_manifest, file_hash
+
+_DOC_LINK_EXTS = frozenset({".md", ".markdown", ".html", ".htm", ".rst"})
+_MD_LINK = re.compile(r"\[[^\]]*\]\(([^)]+)\)")
+_HTML_LINK = re.compile(r"""(?:href|src)\s*=\s*["']([^"']+)["']""", re.IGNORECASE)
+_RST_LINK = re.compile(r"\.\.\s+(?:image|include|figure)::\s+(\S+)")
+_SKIP_HREF_PREFIX = ("http://", "https://", "ftp://", "mailto:", "data:", "javascript:", "#")
+_EOL_TEXT_EXT = TEXT_EXT | {".htm", ".rst", ".markdown"}
 
 ProgressFn = Callable[[int, int], None]
 
@@ -287,3 +297,126 @@ def trash_peek_text() -> str:
 
 def write_manifest(root: Path, *, on_progress: ProgressFn | None = None) -> str:
     return checksums_manifest(root, on_progress=on_progress)
+
+
+def _hrefs_from_text(text: str, suffix: str) -> list[str]:
+    found = list(_MD_LINK.findall(text))
+    if suffix in {".html", ".htm"}:
+        found.extend(_HTML_LINK.findall(text))
+    if suffix == ".rst":
+        found.extend(_RST_LINK.findall(text))
+    return found
+
+
+def _resolve_local_href(source: Path, href: str) -> Path | None:
+    raw = (href or "").strip()
+    if not raw:
+        return None
+    lower = raw.lower()
+    if lower.startswith(_SKIP_HREF_PREFIX):
+        return None
+    raw = raw.split("#", 1)[0].split("?", 1)[0].strip()
+    if not raw or raw.lower().startswith(_SKIP_HREF_PREFIX):
+        return None
+    if lower.startswith("file:"):
+        parsed = urlparse(raw)
+        path_text = unquote(parsed.path or "")
+        if not path_text:
+            return None
+        return Path(path_text)
+    return (source.parent / raw).resolve()
+
+
+def _iter_broken_doc_rows(root: Path, *, limit: int = 8000) -> list[tuple[Path, str, Path]]:
+    scanned = _iter_files(root, limit=limit)
+    rows: list[tuple[Path, str, Path]] = []
+    for path in scanned.paths:
+        if path.suffix.lower() not in _DOC_LINK_EXTS:
+            continue
+        try:
+            text = path.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            continue
+        for href in _hrefs_from_text(text, path.suffix.lower()):
+            resolved = _resolve_local_href(path, href)
+            if resolved is None:
+                continue
+            try:
+                missing = not resolved.exists()
+            except OSError:
+                missing = True
+            if missing:
+                rows.append((path, href, resolved))
+    return rows
+
+
+def broken_doc_links(root: Path, *, limit: int = 8000) -> PathHits:
+    rows = _iter_broken_doc_rows(root, limit=limit)
+    seen: list[Path] = []
+    for source, _href, _resolved in rows:
+        if source not in seen:
+            seen.append(source)
+    scanned = _iter_files(root, limit=limit)
+    return PathHits(seen, scanned.truncated, scanned.limit)
+
+
+def broken_doc_links_text(root: Path, *, limit: int = 8000) -> str:
+    lines = [f"{source}\t{href}" for source, href, _resolved in _iter_broken_doc_rows(root, limit=limit)]
+    return "\n".join(lines) + ("\n" if lines else "")
+
+
+def _eol_kind(data: bytes) -> str:
+    crlf = data.count(b"\r\n")
+    lf_only = data.count(b"\n") - crlf
+    cr_only = data.count(b"\r") - crlf
+    kinds: list[str] = []
+    if lf_only:
+        kinds.append("lf")
+    if crlf:
+        kinds.append("crlf")
+    if cr_only:
+        kinds.append("cr")
+    if len(kinds) > 1:
+        return "mixed"
+    return kinds[0] if kinds else "lf"
+
+
+def eol_audit(root: Path, *, limit: int = 8000) -> list[dict[str, str]]:
+    scanned = _iter_files(root, limit=limit)
+    rows: list[dict[str, str]] = []
+    for path in scanned.paths:
+        if path.suffix.lower() not in _EOL_TEXT_EXT:
+            continue
+        try:
+            data = path.read_bytes()
+        except OSError:
+            continue
+        if b"\x00" in data[:8192]:
+            continue
+        try:
+            encoding = fileutil.guess_encoding(path)
+        except fileutil.FileUtilError:
+            encoding = "unknown"
+        rows.append({"path": str(path), "endings": _eol_kind(data), "encoding": encoding})
+    return rows
+
+
+def eol_audit_text(root: Path, *, limit: int = 8000) -> str:
+    lines = ["path\tendings\tencoding"]
+    for row in eol_audit(root, limit=limit):
+        lines.append(f"{row['path']}\t{row['endings']}\t{row['encoding']}")
+    return "\n".join(lines) + "\n"
+
+
+def near_duplicate_images(root: Path, *, limit: int = 8000) -> GroupHits:
+    images = resize.list_images(root, limit=limit)
+    groups: dict[tuple[int, int, int], list[Path]] = defaultdict(list)
+    for path in images:
+        try:
+            info = resize.image_info(path)
+            key = (int(info["width"]), int(info["height"]), int(info["bytes"]))
+        except (OSError, TypeError, ValueError, resize.ResizeError):
+            continue
+        groups[key].append(path)
+    found = [sorted(items, key=lambda item: str(item)) for items in groups.values() if len(items) > 1]
+    return GroupHits(found, len(images) >= limit, limit)

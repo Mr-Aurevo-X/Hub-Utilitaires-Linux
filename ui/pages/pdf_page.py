@@ -66,6 +66,7 @@ class PdfPage:
                 common.button_row(i18n.t("pdf_blank_go"), self._insert_blank),
                 common.button_row(i18n.t("pdf_reorder"), self._reorder_pages),
                 common.button_row(i18n.t("pdf_extract_images"), self._extract_images),
+                common.button_row(i18n.t("pdf_inventory"), self._inventory),
             ],
         )
         security = common.prefs_group(
@@ -215,6 +216,33 @@ class PdfPage:
             self._window,
             lambda folder: self._run(lambda: pdfutil.extract_images(src, folder, password=password)),
         )
+
+    def _inventory(self, *_args: object) -> None:
+        files = list(self._files)
+
+        def run(paths: list[Path]) -> None:
+            def work() -> str:
+                return pdfutil.inventory(paths)
+
+            def done(result: Any, error: BaseException | None) -> None:
+                if error is not None:
+                    show_toast(self._toast, str(error), 6)
+                    return
+                text = str(result)
+                preview = text if len(text) <= 400 else text[:400] + "…"
+                self._info.set_text(preview)
+                compat.save_file(
+                    self._window,
+                    "pdf-inventory.csv",
+                    lambda dest: dest.write_text(text, encoding="utf-8"),
+                )
+
+            run_in_thread(work, done)
+
+        if files:
+            run(files)
+            return
+        compat.select_folder(self._window, lambda folder: run(pdfutil.list_pdfs(folder)))
 
     def _show_info(self, *_args: object) -> None:
         if not self._files:

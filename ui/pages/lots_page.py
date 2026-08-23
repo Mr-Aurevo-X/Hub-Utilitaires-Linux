@@ -62,6 +62,16 @@ class LotsPage:
                 common.button_row(i18n.t("lots_trash"), self._trash),
             ],
         )
+        more = common.prefs_group(
+            i18n.t("group_more"),
+            [
+                common.button_row(i18n.t("lots_doc_links"), self._doc_links),
+                common.button_row(i18n.t("lots_eol"), self._eol),
+                common.button_row(i18n.t("lots_near_images"), self._near_images),
+            ],
+        )
+        extra = Gtk.Expander(label=i18n.t("group_more"))
+        extra.set_child(more)
         act = common.prefs_group(
             i18n.t("group_export"),
             [
@@ -71,6 +81,7 @@ class LotsPage:
             ],
         )
         box.append(scan)
+        box.append(extra)
         box.append(act)
         self._count = Gtk.Label(xalign=0)
         box.append(self._count)
@@ -184,6 +195,32 @@ class LotsPage:
     def _broken(self, *_args: object) -> None:
         root = self._root_path()
         self._bg(lambda: batchutil.broken_symlinks(root))
+
+    def _doc_links(self, *_args: object) -> None:
+        root = self._root_path()
+
+        def work() -> tuple[Any, str]:
+            return batchutil.broken_doc_links(root), batchutil.broken_doc_links_text(root)
+
+        def done(result: Any, error: BaseException | None) -> None:
+            if error is not None:
+                show_toast(self._toast, str(error), 6)
+                return
+            hits, text = result
+            self._show_paths(hits.paths, truncated=hits.truncated, limit=hits.limit)
+            self._out.set_visible(True)
+            self._out.get_buffer().set_text(text)
+            show_toast(self._toast, "OK")
+
+        run_in_thread(work, done)
+
+    def _eol(self, *_args: object) -> None:
+        root = self._root_path()
+        self._bg(lambda: batchutil.eol_audit_text(root))
+
+    def _near_images(self, *_args: object) -> None:
+        root = self._root_path()
+        self._bg(lambda: batchutil.near_duplicate_images(root), groups=True)
 
     def _trash(self, *_args: object) -> None:
         def work() -> str:
