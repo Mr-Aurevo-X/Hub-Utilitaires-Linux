@@ -94,8 +94,10 @@ def flatpak_install_block(info: dict[str, Any]) -> str:
     asset = str(info.get("asset_name") or FLATPAK_ASSET)
     shortcut_url = str(info.get("shortcut_url") or SHORTCUT_DIRECT.format(version=version))
     return (
+        f"rm -f {asset}\n"
         f"curl -fL -o {asset} \\\n  {url}\n"
         f"flatpak install --user -y --reinstall ./{asset}\n"
+        f"rm -f {SHORTCUT_ASSET}\n"
         f"curl -fL -o {SHORTCUT_ASSET} \\\n  {shortcut_url}\n"
         f"bash ./{SHORTCUT_ASSET}\n"
         f"flatpak run {APP_ID}"

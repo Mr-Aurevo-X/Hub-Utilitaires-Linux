@@ -727,6 +727,7 @@ def test_update_dialog_splits_commands_from_body() -> None:
     body = format_update_dialog_body(info)
     commands = format_update_dialog_commands(info)
     assert "curl -fL" in commands
+    assert "rm -f org.mraurevox.HubUtilitaires.flatpak" in commands
     assert "flatpak install" in commands
     assert "INSTALLER-RACCOURCI-FLATPAK" in commands
     assert "curl -fL" not in body
