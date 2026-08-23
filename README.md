@@ -1,5 +1,8 @@
 # Hub Utilitaires
 
+> **WIP** — encore en développement. Pas une release publique.  
+> **WIP** — still in development. Not a public release.
+
 Boîte d’outils locale Linux (GTK 4 + libadwaita). Recherche, lots, hash, images, PDF, carte disque, atelier (texte, encode, mots de passe). Rien n’est envoyé : pas de compte, pas de télémétrie.
 
 **Version 1.1.0** · GPL-3.0-or-later · © 2026 Mr-Aurevo-X
