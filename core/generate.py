@@ -42,17 +42,19 @@ SIZE_TO_B = {
     "gib": 1024.0**3,
 }
 # Embedded word list — no network fetch.
-_WORDS = (
-    "alpha bravo charlie delta echo foxtrot golf hotel india juliet kilo lima "
-    "mike november oscar papa quebec romeo sierra tango uniform victor whiskey "
-    "xray yankee zulu apple river cedar maple granite harbor meadow canyon "
-    "orchid pebble quartz amber willow coral ember frost glacier harbor "
-    "island jungle lantern meadow nectar orchard pebble quartz raven "
-    "saddle timber umber velvet willow xenon yarrow zenith "
-    "anchor blossom canyon drift ember fjord grove hollow inlet "
-    "jasper knoll lagoon meadow nexus orchard prairie quartz ridge "
-    "summit timber upland valley willow "
-).split()
+_WORDS = tuple(
+    dict.fromkeys(
+        (
+            "alpha bravo charlie delta echo foxtrot golf hotel india juliet kilo lima "
+            "mike november oscar papa quebec romeo sierra tango uniform victor whiskey "
+            "xray yankee zulu apple river cedar maple granite harbor meadow canyon "
+            "orchid pebble quartz amber willow coral ember frost glacier "
+            "island jungle lantern nectar orchard raven saddle timber umber velvet "
+            "xenon yarrow zenith anchor blossom drift fjord grove hollow inlet "
+            "jasper knoll lagoon nexus prairie ridge summit upland valley "
+        ).split()
+    )
+)
 _LOREM = (
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
     "Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. "
@@ -305,9 +307,19 @@ def pin(length: int = 6) -> str:
     return "".join(secrets.choice(string.digits) for _ in range(size))
 
 
+def pin_bits(length: int = 6) -> float:
+    size = max(4, min(12, int(length)))
+    return size * math.log2(10)
+
+
 def passphrase(words: int = 4) -> str:
     count = max(3, min(12, int(words)))
     return "-".join(secrets.choice(_WORDS) for _ in range(count))
+
+
+def passphrase_bits(words: int = 4) -> float:
+    count = max(3, min(12, int(words)))
+    return count * math.log2(len(_WORDS))
 
 
 def lorem(*, paragraphs: int = 1, sentences: int = 3) -> str:

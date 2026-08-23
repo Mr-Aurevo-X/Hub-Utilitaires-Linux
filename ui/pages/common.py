@@ -51,6 +51,35 @@ def copy_text(text: str, toast: Gtk.Widget | None = None) -> None:
         show_toast(toast, i18n.t("copied"))
 
 
+def path_row_label(path: Path, *, numbered: int | None = None) -> tuple[str, str]:
+    title = path.name or str(path)
+    if numbered is not None:
+        title = f"{numbered}. {title}"
+    return title, str(path)
+
+
+def fill_path_list(box: Gtk.ListBox, paths: list[Path], *, numbered: bool = False) -> None:
+    clear_list(box)
+    if not paths:
+        empty = Gtk.Label(label="—", xalign=0)
+        empty.set_margin_start(10)
+        empty.set_margin_top(8)
+        empty.set_margin_bottom(8)
+        box.append(empty)
+        return
+    for index, path in enumerate(paths, start=1):
+        row = Gtk.ListBoxRow()
+        title, tip = path_row_label(path, numbered=index if numbered else None)
+        lab = Gtk.Label(label=title, xalign=0)
+        lab.set_tooltip_text(tip)
+        lab.set_margin_start(10)
+        lab.set_margin_end(10)
+        lab.set_margin_top(6)
+        lab.set_margin_bottom(6)
+        row.set_child(lab)
+        box.append(row)
+
+
 def gio_paths(files: Gio.ListModel | None) -> list[Path]:
     if files is None:
         return []

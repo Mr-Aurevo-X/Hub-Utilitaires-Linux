@@ -29,9 +29,9 @@ class HashPage:
             self._set_b(paths[1:2])
 
     def _build(self) -> Gtk.Widget:
-        a_btn = Gtk.Button(label=i18n.t("hash_file"))
+        a_btn = common.t_button("hash_file")
         a_btn.connect("clicked", lambda *_: compat.open_files(self._window, self._set_a))
-        b_btn = Gtk.Button(label=i18n.t("hash_file_b"))
+        b_btn = common.t_button("hash_file_b")
         b_btn.connect("clicked", lambda *_: compat.open_files(self._window, self._set_b))
         files = common.prefs_group("group_files",
             [common.action_row("hash_file", a_btn), common.action_row("hash_file_b", b_btn)],
@@ -42,8 +42,8 @@ class HashPage:
         self._sha512 = Gtk.Entry(placeholder_text="SHA-512")
         self._blake = Gtk.Entry(placeholder_text="BLAKE2b")
         self._crc = Gtk.Entry(placeholder_text="CRC32")
-        self._md5 = Gtk.Entry(placeholder_text=i18n.t("hash_md5"))
-        self._sha1 = Gtk.Entry(placeholder_text=i18n.t("hash_sha1"))
+        self._md5 = common.t_entry("hash_md5")
+        self._sha1 = common.t_entry("hash_sha1")
         digest_rows: list[Gtk.Widget] = []
         for title, entry in (
             ("SHA-256", self._sha256),
@@ -53,27 +53,27 @@ class HashPage:
             (i18n.t("hash_md5"), self._md5),
             (i18n.t("hash_sha1"), self._sha1),
         ):
-            copy = Gtk.Button(label=i18n.t("copy"))
+            copy = common.t_button("copy")
             copy.connect("clicked", lambda *_a, src=entry: common.copy_text(src.get_text(), self._toast))
             row = common.action_row(title, copy)
             row.add_suffix(entry)
             digest_rows.append(row)
         digests = common.prefs_group("group_digests", digest_rows)
-        self._hmac_key = Gtk.Entry(placeholder_text=i18n.t("hash_hmac_key"))
-        self._hmac = Gtk.Entry(placeholder_text=i18n.t("hash_hmac"))
-        self._expect = Gtk.Entry(placeholder_text=i18n.t("hash_compare"))
-        go = Gtk.Button(label=i18n.t("hash_run"))
+        self._hmac_key = common.t_entry("hash_hmac_key")
+        self._hmac = common.t_entry("hash_hmac")
+        self._expect = common.t_entry("hash_compare")
+        go = common.t_button("hash_run")
         go.add_css_class("suggested-action")
         go.connect("clicked", lambda *_: self._hash_a())
-        cmp_btn = Gtk.Button(label=i18n.t("hash_compare_files"))
+        cmp_btn = common.t_button("hash_compare_files")
         cmp_btn.connect("clicked", lambda *_: self._compare())
-        man = Gtk.Button(label=i18n.t("hash_manifest"))
+        man = common.t_button("hash_manifest")
         man.connect("clicked", lambda *_: self._manifest())
-        verify = Gtk.Button(label=i18n.t("hash_verify"))
+        verify = common.t_button("hash_verify")
         verify.connect("clicked", lambda *_: self._verify())
-        dir_a_btn = Gtk.Button(label=i18n.t("hash_dir_a"))
+        dir_a_btn = common.t_button("hash_dir_a")
         dir_a_btn.connect("clicked", lambda *_: compat.select_folder(self._window, self._set_dir_a))
-        dir_b_btn = Gtk.Button(label=i18n.t("hash_dir_b"))
+        dir_b_btn = common.t_button("hash_dir_b")
         dir_b_btn.connect("clicked", lambda *_: compat.select_folder(self._window, self._set_dir_b))
         compare = common.prefs_group("group_compare",
             [

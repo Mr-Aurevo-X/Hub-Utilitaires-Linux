@@ -95,9 +95,9 @@ class FindPage:
         box.append(self._list)
         send = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
         row_a = Gtk.Box(spacing=8)
-        export_btn = Gtk.Button(label=i18n.t("export"))
+        export_btn = common.t_button("export")
         export_btn.connect("clicked", lambda *_: self._export())
-        export_json_btn = Gtk.Button(label=i18n.t("find_export_json"))
+        export_json_btn = common.t_button("find_export_json")
         export_json_btn.connect("clicked", lambda *_: self._export_json())
         row_a.append(export_btn)
         row_a.append(export_json_btn)
@@ -113,19 +113,19 @@ class FindPage:
                 ("textdiff", "send_textdiff"),
             )
         ):
-            btn = Gtk.Button(label=i18n.t(key))
+            btn = common.t_button(key)
             btn.connect("clicked", lambda *_a, dest=target: self._send(dest))
             (row_a if index < 3 else row_b).append(btn)
         send.append(row_a)
         send.append(row_b)
         box.append(send)
-        self._needle = Gtk.Entry(placeholder_text=i18n.t("find_replace"))
-        self._repl = Gtk.Entry(placeholder_text=i18n.t("find_replace_with"))
-        self._overwrite = Gtk.CheckButton(label=i18n.t("overwrite"))
-        self._regex = Gtk.CheckButton(label=i18n.t("find_replace_regex"))
-        preview = Gtk.Button(label=i18n.t("rename_preview"))
+        self._needle = common.t_entry("find_replace")
+        self._repl = common.t_entry("find_replace_with")
+        self._overwrite = common.t_check("overwrite")
+        self._regex = common.t_check("find_replace_regex")
+        preview = common.t_button("rename_preview")
         preview.connect("clicked", lambda *_: self._replace(preview_only=True))
-        apply_btn = Gtk.Button(label=i18n.t("find_replace_go"))
+        apply_btn = common.t_button("find_replace_go")
         apply_btn.connect("clicked", lambda *_: self._replace(preview_only=False))
         repl_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
         repl_box.append(self._needle)
@@ -188,7 +188,7 @@ class FindPage:
             key = "hits_truncated" if hits.truncated else "hits_count"
             self._count.set_text(i18n.t(key, count=len(hits.paths), limit=hits.limit))
             if not hits.paths:
-                self._list.append(Gtk.Label(label=i18n.t("find_empty"), margin_top=8, margin_bottom=8))
+                self._list.append(common.t_label("find_empty", margin_top=8, margin_bottom=8))
                 return
             for path in hits.paths:
                 row = Gtk.ListBoxRow()
@@ -284,10 +284,10 @@ class FindPage:
         favs = app_settings.favorite_searches(self._settings)
         if not favs:
             self._search_fav_box.append(
-                Gtk.Label(label=i18n.t("find_search_empty"), margin_top=8, margin_bottom=8, margin_start=8, margin_end=8)
+                common.t_label("find_search_empty", margin_top=8, margin_bottom=8, margin_start=8, margin_end=8)
             )
             return
-        self._search_fav_box.append(Gtk.Label(label=i18n.t("find_search_favorites"), xalign=0, margin_start=8))
+        self._search_fav_box.append(common.t_label("find_search_favorites", xalign=0, margin_start=8))
         for item in favs:
             label = item["query"] or item["content"] or item["folder"]
             btn = Gtk.Button(label=label)

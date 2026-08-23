@@ -35,14 +35,14 @@ class ColorPage:
         for entry in (self._hex, self._rgb, self._hsl, self._hsv):
             entry.set_editable(False)
             box.append(entry)
-        pick = Gtk.Button(label=i18n.t("color_pick"))
+        pick = common.t_button("color_pick")
         pick.connect("clicked", self._choose)
-        screen = Gtk.Button(label=i18n.t("color_screen"))
+        screen = common.t_button("color_screen")
         screen.add_css_class("suggested-action")
         screen.connect("clicked", self._screen)
         copy = Gtk.Button(label="HEX")
         copy.connect("clicked", lambda *_: self._copy())
-        rnd = Gtk.Button(label=i18n.t("color_random"))
+        rnd = common.t_button("color_random")
         rnd.connect("clicked", lambda *_: self._apply(*color_core.random_color()))
         box.append(
             common.prefs_group("group_actions",
@@ -58,11 +58,11 @@ class ColorPage:
         box.append(self._harmony)
         self._contrast = Gtk.Label(wrap=True, xalign=0)
         box.append(self._contrast)
-        fg = Gtk.Button(label=i18n.t("color_fg"))
+        fg = common.t_button("color_fg")
         fg.connect("clicked", self._choose_fg)
-        pal = Gtk.Button(label=i18n.t("color_palette"))
+        pal = common.t_button("color_palette")
         pal.connect("clicked", self._palette)
-        grad = Gtk.Button(label=i18n.t("color_gradient"))
+        grad = common.t_button("color_gradient")
         grad.connect("clicked", self._gradient)
         box.append(
             common.prefs_group("group_transform",
@@ -78,11 +78,11 @@ class ColorPage:
         self._history_list = Gtk.ListBox()
         self._history_list.add_css_class("boxed-list")
         self._history_list.connect("row-activated", self._history_pick)
-        box.append(Gtk.Label(label=i18n.t("color_history"), xalign=0))
+        box.append(common.t_label("color_history", xalign=0))
         box.append(self._history_list)
-        gpl_btn = Gtk.Button(label=i18n.t("color_gpl"))
+        gpl_btn = common.t_button("color_gpl")
         gpl_btn.connect("clicked", lambda *_: self._export_palette("gpl"))
-        css_btn = Gtk.Button(label=i18n.t("color_css"))
+        css_btn = common.t_button("color_css")
         css_btn.connect("clicked", lambda *_: self._export_palette("css"))
         box.append(
             common.prefs_group("group_export",

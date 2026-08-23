@@ -46,9 +46,9 @@ class FilePage:
     def _tab_inspect(self) -> Gtk.Widget:
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
         common.padded(box)
-        pick = Gtk.Button(label=i18n.t("add_files"))
+        pick = common.t_button("add_files")
         pick.connect("clicked", lambda *_: compat.open_files(self._window, self._set_a))
-        pick_b = Gtk.Button(label=i18n.t("hash_file_b"))
+        pick_b = common.t_button("hash_file_b")
         pick_b.connect("clicked", lambda *_: compat.open_files(self._window, self._set_b))
         row = Gtk.Box(spacing=8)
         row.append(pick)
@@ -60,7 +60,7 @@ class FilePage:
         box.append(self._mode)
         self._chunk = Gtk.SpinButton.new_with_range(1, 512, 1)
         self._chunk.set_value(8)
-        box.append(Gtk.Label(label=i18n.t("file_split"), xalign=0))
+        box.append(common.t_label("file_split", xalign=0))
         box.append(self._chunk)
         inspect = common.prefs_group("group_inspect",
             [
@@ -97,12 +97,15 @@ class FilePage:
     def _tab_archive(self) -> Gtk.Widget:
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
         common.padded(box)
-        add = Gtk.Button(label=i18n.t("add_files"))
+        add = common.t_button("add_files")
         add.connect("clicked", lambda *_: compat.open_files(self._window, self._set_archive, multiple=True))
         box.append(add)
-        self._arc_list = Gtk.Label(label="—", wrap=True, xalign=0)
-        box.append(self._arc_list)
-        self._filter = Gtk.Entry(placeholder_text=i18n.t("file_filter"))
+        self._arc_count = Gtk.Label(xalign=0)
+        self._arc_count.set_text(i18n.t("files_count", count=0))
+        box.append(self._arc_count)
+        self._arc_list = Gtk.ListBox()
+        box.append(common.scrolled(self._arc_list, min_content_height=140))
+        self._filter = common.t_entry("file_filter")
         box.append(self._filter)
         grid = common.prefs_group("group_archive",
             [
@@ -133,7 +136,8 @@ class FilePage:
 
     def _set_archive(self, paths: list[Path]) -> None:
         self._archive_files = paths
-        self._arc_list.set_text("\n".join(str(p) for p in paths) or "—")
+        self._arc_count.set_text(i18n.t("files_count", count=len(paths)))
+        common.fill_path_list(self._arc_list, paths)
 
     def _need(self) -> Path | None:
         if self._path is None:

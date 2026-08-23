@@ -160,3 +160,72 @@ def test_relabel_tree_updates_bound_label() -> None:
         assert buf.get_text(start, end, True) == "KEEP-STATE"
     finally:
         i18n.set_language(previous)
+
+
+def test_pages_do_not_freeze_button_labels() -> None:
+    root = Path(__file__).resolve().parents[1] / "ui" / "pages"
+    needle = "Gtk.Button(label=i18n.t("
+    frozen: list[str] = []
+    for path in sorted(root.glob("*_page.py")):
+        if path.name == "prefs_page.py":
+            continue
+        if needle in path.read_text(encoding="utf-8"):
+            frozen.append(path.name)
+    assert frozen == []
+
+
+def test_path_row_label_uses_basename() -> None:
+    from ui.pages.common import path_row_label
+
+    title, tip = path_row_label(Path("/tmp/docs/report.pdf"), numbered=3)
+    assert title == "3. report.pdf"
+    assert tip.endswith("report.pdf")
+
+
+def test_hit_treemap_picks_rect() -> None:
+    from core.diskmap import DiskEntry, hit_treemap, treemap_rects
+
+    entries = [
+        DiskEntry(Path("/tmp/big"), "big", True, 75, 75.0),
+        DiskEntry(Path("/tmp/mid"), "mid", False, 25, 25.0),
+    ]
+    rects = treemap_rects(entries, 200.0, 100.0)
+    hit = hit_treemap(rects, 10.0, 10.0)
+    assert hit is not None
+    assert hit.name == "big"
+    assert hit.path == Path("/tmp/big")
+    assert hit_treemap(rects, -1.0, 0.0) is None
+
+
+def test_passphrase_entropy_and_unique_words() -> None:
+    from core import generate
+
+    words = set(generate._WORDS)
+    assert len(words) == len(generate._WORDS)
+    bits = generate.passphrase_bits(4)
+    assert bits == pytest.approx(4 * __import__("math").log2(len(generate._WORDS)))
+    phrase = generate.passphrase(4)
+    assert len(phrase.split("-")) == 4
+
+
+def test_readme_public_ready_keeps_source_private() -> None:
+    root = Path(__file__).resolve().parents[1]
+    readme = (root / "README.md").read_text(encoding="utf-8")
+    version = (root / "VERSION").read_text(encoding="utf-8").strip()
+    assert version == "1.1.0"
+    assert "privé" in readme.lower() or "private" in readme.lower()
+    assert "linux-flatpak-releases" in readme
+    assert "LANCER.sh" in readme
+    assert "télémétrie" in readme.lower() or "telemetry" in readme.lower()
+    meta = (root / "packaging" / "flatpak" / "org.mraurevox.HubUtilitaires.metainfo.xml").read_text(
+        encoding="utf-8"
+    )
+    assert 'version="1.1.0"' in meta
+    atelier = (root / "ui" / "pages" / "atelier_page.py").read_text(encoding="utf-8")
+    assert "_pin_len" in atelier
+    assert "passphrase_bits" in atelier
+    pdf = (root / "ui" / "pages" / "pdf_page.py").read_text(encoding="utf-8")
+    assert "fill_path_list" in pdf
+    disk = (root / "ui" / "pages" / "disk_page.py").read_text(encoding="utf-8")
+    assert "hit_treemap" in disk
+    assert "set_content_height(160)" not in disk

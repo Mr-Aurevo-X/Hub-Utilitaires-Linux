@@ -25,6 +25,11 @@
   </provides>
   <content_rating type="oars-1.1"/>
   <releases>
+    <release version="1.1.0" date="2026-08-23">
+      <description>
+        <p>1.1.0 : langue sans perte d’état, listes fichiers lisibles, carte disque cliquable, générateur de mots de passe (PIN / phrase), JWT = décodage local uniquement.</p>
+      </description>
+    </release>
     <release version="1.0.0" date="2026-08-23">
       <description>
         <p>1.0.0 : lots (liens docs locaux, audit EOL, quasi-doublons images), inventaire PDF, diff d’archives. 100 % local.</p>

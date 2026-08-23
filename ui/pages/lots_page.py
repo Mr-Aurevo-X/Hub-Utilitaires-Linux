@@ -80,15 +80,15 @@ class LotsPage:
         self._days.set_value(30)
         self._mb = Gtk.SpinButton.new_with_range(1, 10240, 1)
         self._mb.set_value(50)
-        nums.append(Gtk.Label(label=i18n.t("lots_days")))
+        nums.append(common.t_label("lots_days"))
         nums.append(self._days)
-        nums.append(Gtk.Label(label=i18n.t("lots_mb")))
+        nums.append(common.t_label("lots_mb"))
         nums.append(self._mb)
         box.append(nums)
         self._progress = Gtk.ProgressBar()
         self._progress.set_show_text(True)
         box.append(self._progress)
-        cancel = Gtk.Button(label=i18n.t("disk_cancel"))
+        cancel = common.t_button("disk_cancel")
         cancel.connect("clicked", lambda *_: self._do_cancel())
         box.append(cancel)
         scan = common.prefs_group("group_actions",
@@ -136,7 +136,7 @@ class LotsPage:
             ("pdf", "send_pdf"),
             ("file", "send_file"),
         ):
-            btn = Gtk.Button(label=i18n.t(key))
+            btn = common.t_button(key)
             btn.connect("clicked", lambda *_a, dest=target: self._send(dest))
             send.append(btn)
         box.append(send)
@@ -166,15 +166,7 @@ class LotsPage:
         common.clear_list(self._list)
         self._set_hits(truncated, len(paths), limit)
         self._out.set_visible(False)
-        for path in paths:
-            row = Gtk.ListBoxRow()
-            lab = Gtk.Label(label=str(path), xalign=0, wrap=True)
-            lab.set_margin_start(10)
-            lab.set_margin_end(10)
-            lab.set_margin_top(6)
-            lab.set_margin_bottom(6)
-            row.set_child(lab)
-            self._list.append(row)
+        common.fill_path_list(self._list, paths)
         self._out.get_buffer().set_text("")
 
     def _show_groups(self, groups: list[list[Path]], *, truncated: bool = False, limit: int = 0) -> None:
@@ -206,7 +198,9 @@ class LotsPage:
             self._group_checks.append(check)
             for path in group:
                 row = Gtk.ListBoxRow()
-                lab = Gtk.Label(label=str(path), xalign=0, wrap=True)
+                title, tip = common.path_row_label(path)
+                lab = Gtk.Label(label=title, xalign=0)
+                lab.set_tooltip_text(tip)
                 lab.set_margin_start(18)
                 lab.set_margin_end(10)
                 lab.set_margin_top(4)

@@ -37,6 +37,8 @@ class TreemapRect:
     w: float
     h: float
     percent: float
+    path: Path | None = None
+    is_dir: bool = False
 
 
 def human_size(n: int) -> str:
@@ -148,17 +150,25 @@ def _slice_rects(
     group_total = sum(item.size for item in items)
     share = first.size / group_total if group_total else 1.0
     percent = first.size / total * 100.0 if total else 0.0
+    rect = TreemapRect(first.name, x, y, width, height, percent, first.path, first.is_dir)
     if len(items) == 1:
-        return [TreemapRect(first.name, x, y, width, height, percent)]
+        return [rect]
     if horizontal:
         slice_w = width * share
-        head = TreemapRect(first.name, x, y, slice_w, height, percent)
+        head = TreemapRect(first.name, x, y, slice_w, height, percent, first.path, first.is_dir)
         tail = _slice_rects(items[1:], x + slice_w, y, width - slice_w, height, total, horizontal=False)
         return [head, *tail]
     slice_h = height * share
-    head = TreemapRect(first.name, x, y, width, slice_h, percent)
+    head = TreemapRect(first.name, x, y, width, slice_h, percent, first.path, first.is_dir)
     tail = _slice_rects(items[1:], x, y + slice_h, width, height - slice_h, total, horizontal=True)
     return [head, *tail]
+
+
+def hit_treemap(rects: list[TreemapRect], x: float, y: float) -> TreemapRect | None:
+    for rect in rects:
+        if rect.x <= x < rect.x + rect.w and rect.y <= y < rect.y + rect.h:
+            return rect
+    return None
 
 
 def export_csv(entries: list[DiskEntry]) -> str:
