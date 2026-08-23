@@ -4,40 +4,20 @@ Boîte d’outils locale Linux (GTK 4 + libadwaita). Recherche, lots, hash, imag
 
 **Version 1.1.0** · GPL-3.0-or-later · © 2026 Mr-Aurevo-X
 
-> Le dépôt source `Mr-Aurevo-X/Hub-Utilitaires-Linux` reste **privé**.  
-> Les paquets publics sont sur [linux-flatpak-releases](https://github.com/Mr-Aurevo-X/linux-flatpak-releases) et [linux-releases](https://github.com/Mr-Aurevo-X/linux-releases).
+> Dépôt **privé** : `Mr-Aurevo-X/Hub-Utilitaires-Linux`.  
+> Pas de canal public. Pas de Flatpak / tar.gz hors de ce dépôt.
 
 ---
 
 ## Français
 
-### Installation (publique, sans accès au source)
-
-**Flatpak** (recommandé, toutes distros) :
-
-```bash
-curl -fL -o org.mraurevox.HubUtilitaires.flatpak \
-  https://github.com/Mr-Aurevo-X/linux-flatpak-releases/releases/download/Hub-Utilitaires-v1.1.0/org.mraurevox.HubUtilitaires.flatpak
-flatpak install --user -y ./org.mraurevox.HubUtilitaires.flatpak
-flatpak run org.mraurevox.HubUtilitaires
-```
-
-**Natif** (paquets de votre distro + `install.sh`) :
-
-```bash
-curl -fL -O https://github.com/Mr-Aurevo-X/linux-releases/releases/download/Hub-Utilitaires-v1.1.0/MrAurevoX_Kit-1.1.0.tar.gz
-tar -xzf MrAurevoX_Kit-1.1.0.tar.gz
-cd MrAurevoX_Kit-1.1.0
-bash install.sh
-```
-
-Le nom `MrAurevoX_Kit-*.tar.gz` est historique (canal linux-releases). Le produit est **Hub Utilitaires**.
-
-### Dev local (clone privé)
+### Lancer (clone)
 
 ```bash
 bash LANCER.sh
 ```
+
+Release interne : tag `v1.1.0` sur ce dépôt (assets pour le propriétaire / collaborateurs).
 
 ### Fonctions
 
@@ -62,36 +42,16 @@ Local Linux toolkit (GTK 4 + libadwaita). Search, batch jobs, hash, images, PDF,
 
 **Version 1.1.0** · GPL-3.0-or-later · © 2026 Mr-Aurevo-X
 
-> Source repo `Mr-Aurevo-X/Hub-Utilitaires-Linux` stays **private**.  
-> Public packages live on [linux-flatpak-releases](https://github.com/Mr-Aurevo-X/linux-flatpak-releases) and [linux-releases](https://github.com/Mr-Aurevo-X/linux-releases).
+> **Private** repo: `Mr-Aurevo-X/Hub-Utilitaires-Linux`.  
+> No public channel. No Flatpak / tarball outside this repo.
 
-### Install (public, no source access)
-
-**Flatpak** (recommended):
-
-```bash
-curl -fL -o org.mraurevox.HubUtilitaires.flatpak \
-  https://github.com/Mr-Aurevo-X/linux-flatpak-releases/releases/download/Hub-Utilitaires-v1.1.0/org.mraurevox.HubUtilitaires.flatpak
-flatpak install --user -y ./org.mraurevox.HubUtilitaires.flatpak
-flatpak run org.mraurevox.HubUtilitaires
-```
-
-**Native**:
-
-```bash
-curl -fL -O https://github.com/Mr-Aurevo-X/linux-releases/releases/download/Hub-Utilitaires-v1.1.0/MrAurevoX_Kit-1.1.0.tar.gz
-tar -xzf MrAurevoX_Kit-1.1.0.tar.gz
-cd MrAurevoX_Kit-1.1.0
-bash install.sh
-```
-
-`MrAurevoX_Kit-*.tar.gz` is the historical linux-releases filename. The product is **Hub Utilitaires**.
-
-### Local dev (private clone)
+### Run (clone)
 
 ```bash
 bash LANCER.sh
 ```
+
+Internal release: tag `v1.1.0` on this repo (assets for the owner / collaborators).
 
 ### Features
 

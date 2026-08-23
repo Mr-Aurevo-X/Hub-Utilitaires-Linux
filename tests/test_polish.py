@@ -214,7 +214,8 @@ def test_readme_public_ready_keeps_source_private() -> None:
     version = (root / "VERSION").read_text(encoding="utf-8").strip()
     assert version == "1.1.0"
     assert "privé" in readme.lower() or "private" in readme.lower()
-    assert "linux-flatpak-releases" in readme
+    assert "linux-flatpak-releases" not in readme
+    assert "linux-releases" not in readme
     assert "LANCER.sh" in readme
     assert "télémétrie" in readme.lower() or "telemetry" in readme.lower()
     meta = (root / "packaging" / "flatpak" / "org.mraurevox.HubUtilitaires.metainfo.xml").read_text(
