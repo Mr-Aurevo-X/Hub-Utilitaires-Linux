@@ -1,5 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
   <rect width="128" height="128" rx="28" fill="#12141a"/>
-  <rect x="8" y="8" width="112" height="112" rx="22" fill="none" stroke="#33c49a" stroke-width="4"/>
-  <text x="64" y="82" text-anchor="middle" font-family="DejaVu Sans, Noto Sans, sans-serif" font-size="48" font-weight="700" fill="#e8f5f0">MX</text>
+  <rect x="7" y="7" width="114" height="114" rx="22" fill="none" stroke="#34d399" stroke-width="3" opacity="0.28"/>
+  <circle cx="46" cy="64" r="18" fill="none" stroke="#34d399" stroke-width="7"/>
+  <circle cx="46" cy="64" r="7" fill="#12141a"/>
+  <path d="M62 64 H102" fill="none" stroke="#34d399" stroke-width="8" stroke-linecap="round"/>
+  <path d="M90 64 V78 M100 64 V74" fill="none" stroke="#6ee7b7" stroke-width="7" stroke-linecap="round"/>
 </svg>

@@ -55,6 +55,8 @@ modules:
         ${FLATPAK_DEST}/share/applications/org.mraurevox.HubUtilitaires.desktop
       - install -Dm644 packaging/flatpak/org.mraurevox.HubUtilitaires.metainfo.xml
         ${FLATPAK_DEST}/share/metainfo/org.mraurevox.HubUtilitaires.metainfo.xml
+      - install -Dm644 packaging/flatpak/org.mraurevox.HubUtilitaires.svg
+        ${FLATPAK_DEST}/share/icons/hicolor/scalable/apps/org.mraurevox.HubUtilitaires.svg
       - install -Dm644 packaging/flatpak/org.mraurevox.HubUtilitaires.png
         ${FLATPAK_DEST}/share/icons/hicolor/128x128/apps/org.mraurevox.HubUtilitaires.png
     sources:
