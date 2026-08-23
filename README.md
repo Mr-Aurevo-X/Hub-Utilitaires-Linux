@@ -5,7 +5,7 @@
 
 Boîte d’outils locale Linux (GTK 4 + libadwaita). Recherche, lots, hash, images, PDF, carte disque, atelier (texte, encode, mots de passe). Rien n’est envoyé : pas de compte, pas de télémétrie.
 
-**1.1.2** — [releases](https://github.com/Mr-Aurevo-X/Hub-Utilitaires-Linux/releases) · GPL-3.0-or-later · © 2026 Mr-Aurevo-X
+**1.1.3** — [releases](https://github.com/Mr-Aurevo-X/Hub-Utilitaires-Linux/releases) · GPL-3.0-or-later · © 2026 Mr-Aurevo-X
 
 ---
 
@@ -16,11 +16,12 @@ Boîte d’outils locale Linux (GTK 4 + libadwaita). Recherche, lots, hash, imag
 Prérequis : [Flatpak](https://flatpak.org/setup/) + runtime GNOME 49 (installé automatiquement depuis Flathub au premier `flatpak install`).
 
 ```bash
-wget -O org.mraurevox.HubUtilitaires.flatpak \
-  https://github.com/Mr-Aurevo-X/Hub-Utilitaires-Linux/releases/download/v1.1.2/org.mraurevox.HubUtilitaires.flatpak
+rm -f org.mraurevox.HubUtilitaires.flatpak
+wget --no-continue -O org.mraurevox.HubUtilitaires.flatpak \
+  https://github.com/Mr-Aurevo-X/Hub-Utilitaires-Linux/releases/download/v1.1.3/org.mraurevox.HubUtilitaires.flatpak
 flatpak install --user -y --reinstall ./org.mraurevox.HubUtilitaires.flatpak
-wget -O INSTALLER-RACCOURCI-FLATPAK.sh \
-  https://github.com/Mr-Aurevo-X/Hub-Utilitaires-Linux/releases/download/v1.1.2/INSTALLER-RACCOURCI-FLATPAK.sh
+wget --no-continue -O INSTALLER-RACCOURCI-FLATPAK.sh \
+  https://github.com/Mr-Aurevo-X/Hub-Utilitaires-Linux/releases/download/v1.1.3/INSTALLER-RACCOURCI-FLATPAK.sh
 bash ./INSTALLER-RACCOURCI-FLATPAK.sh
 flatpak run org.mraurevox.HubUtilitaires
 ```
@@ -51,11 +52,12 @@ Local Linux toolkit (GTK 4 + libadwaita). Search, batch jobs, hash, images, PDF,
 ### Install (Flatpak)
 
 ```bash
-wget -O org.mraurevox.HubUtilitaires.flatpak \
-  https://github.com/Mr-Aurevo-X/Hub-Utilitaires-Linux/releases/download/v1.1.2/org.mraurevox.HubUtilitaires.flatpak
+rm -f org.mraurevox.HubUtilitaires.flatpak
+wget --no-continue -O org.mraurevox.HubUtilitaires.flatpak \
+  https://github.com/Mr-Aurevo-X/Hub-Utilitaires-Linux/releases/download/v1.1.3/org.mraurevox.HubUtilitaires.flatpak
 flatpak install --user -y --reinstall ./org.mraurevox.HubUtilitaires.flatpak
-wget -O INSTALLER-RACCOURCI-FLATPAK.sh \
-  https://github.com/Mr-Aurevo-X/Hub-Utilitaires-Linux/releases/download/v1.1.2/INSTALLER-RACCOURCI-FLATPAK.sh
+wget --no-continue -O INSTALLER-RACCOURCI-FLATPAK.sh \
+  https://github.com/Mr-Aurevo-X/Hub-Utilitaires-Linux/releases/download/v1.1.3/INSTALLER-RACCOURCI-FLATPAK.sh
 bash ./INSTALLER-RACCOURCI-FLATPAK.sh
 flatpak run org.mraurevox.HubUtilitaires
 ```
