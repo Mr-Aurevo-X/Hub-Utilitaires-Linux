@@ -6,7 +6,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-PUBLIC_REPO="Mr-Aurevo-X/Hub Utilitaires"
+PUBLIC_REPO="Mr-Aurevo-X/Hub-Utilitaires-Linux"
 APP_ID="org.mraurevox.HubUtilitaires"
 
 FROM_DIR=""
