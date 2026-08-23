@@ -5,22 +5,27 @@
 
 Boîte d’outils locale Linux (GTK 4 + libadwaita). Recherche, lots, hash, images, PDF, carte disque, atelier (texte, encode, mots de passe). Rien n’est envoyé : pas de compte, pas de télémétrie.
 
-**Version 1.1.1** · GPL-3.0-or-later · © 2026 Mr-Aurevo-X
-
-> Dépôt **privé** : `Mr-Aurevo-X/Hub-Utilitaires-Linux`.  
-> Pas de canal public. Pas de Flatpak / tar.gz hors de ce dépôt.
+**1.1.1** — [releases](https://github.com/Mr-Aurevo-X/Hub-Utilitaires-Linux/releases) · GPL-3.0-or-later · © 2026 Mr-Aurevo-X
 
 ---
 
 ## Français
 
-### Lancer (clone)
+### Installer (Flatpak)
+
+Prérequis : [Flatpak](https://flatpak.org/setup/) + runtime GNOME 49 (installé automatiquement depuis Flathub au premier `flatpak install`).
 
 ```bash
-bash LANCER.sh
+wget -O org.mraurevox.HubUtilitaires.flatpak \
+  https://github.com/Mr-Aurevo-X/Hub-Utilitaires-Linux/releases/download/v1.1.1/org.mraurevox.HubUtilitaires.flatpak
+flatpak install --user -y --reinstall ./org.mraurevox.HubUtilitaires.flatpak
+wget -O INSTALLER-RACCOURCI-FLATPAK.sh \
+  https://github.com/Mr-Aurevo-X/Hub-Utilitaires-Linux/releases/download/v1.1.1/INSTALLER-RACCOURCI-FLATPAK.sh
+bash ./INSTALLER-RACCOURCI-FLATPAK.sh
+flatpak run org.mraurevox.HubUtilitaires
 ```
 
-Release interne : tag `v1.1.1` sur ce dépôt (assets pour le propriétaire / collaborateurs).
+Dev sans installer : `bash LANCER.sh`
 
 ### Fonctions
 
@@ -43,18 +48,19 @@ Licence et mentions : [LEGAL.md](LEGAL.md) · [LICENSE](LICENSE)
 
 Local Linux toolkit (GTK 4 + libadwaita). Search, batch jobs, hash, images, PDF, disk map, workshop (text, encode, passwords). Nothing is uploaded: no account, no telemetry.
 
-**Version 1.1.1** · GPL-3.0-or-later · © 2026 Mr-Aurevo-X
-
-> **Private** repo: `Mr-Aurevo-X/Hub-Utilitaires-Linux`.  
-> No public channel. No Flatpak / tarball outside this repo.
-
-### Run (clone)
+### Install (Flatpak)
 
 ```bash
-bash LANCER.sh
+wget -O org.mraurevox.HubUtilitaires.flatpak \
+  https://github.com/Mr-Aurevo-X/Hub-Utilitaires-Linux/releases/download/v1.1.1/org.mraurevox.HubUtilitaires.flatpak
+flatpak install --user -y --reinstall ./org.mraurevox.HubUtilitaires.flatpak
+wget -O INSTALLER-RACCOURCI-FLATPAK.sh \
+  https://github.com/Mr-Aurevo-X/Hub-Utilitaires-Linux/releases/download/v1.1.1/INSTALLER-RACCOURCI-FLATPAK.sh
+bash ./INSTALLER-RACCOURCI-FLATPAK.sh
+flatpak run org.mraurevox.HubUtilitaires
 ```
 
-Internal release: tag `v1.1.1` on this repo (assets for the owner / collaborators).
+Dev without install: `bash LANCER.sh`
 
 ### Features
 
@@ -73,4 +79,15 @@ Legal: [LEGAL.md](LEGAL.md) · [LICENSE](LICENSE)
 
 ---
 
-Copyright © 2026 Mr-Aurevo-X
+## Soutien (optionnel) / Support (optional)
+
+Si le boulot te plaît, un café — sinon profite.  
+If you like the work, a coffee — otherwise just enjoy it.
+
+[![Discord](https://img.shields.io/badge/Discord-Mr--Aurevo--X-5865F2?style=for-the-badge&logo=discord&logoColor=white&labelColor=050807)](https://discord.com/users/406891052516114442)
+[![PayPal](https://img.shields.io/badge/PayPal-Donate-39ff14?style=for-the-badge&logo=paypal&logoColor=00f0ff&labelColor=050807)](https://www.paypal.com/paypalme/aurevo1)
+[![Revolut](https://img.shields.io/badge/Revolut-mr__aurevo__x-00f0ff?style=for-the-badge&logo=revolut&logoColor=39ff14&labelColor=050807)](https://revolut.me/mr_aurevo_x)
+
+---
+
+Copyright © 2026 Mr-Aurevo-X — GPL-3.0-or-later
