@@ -5,7 +5,7 @@
 
 Boîte d’outils locale Linux (GTK 4 + libadwaita). Recherche, lots, hash, images, PDF, carte disque, atelier (texte, encode, mots de passe). Rien n’est envoyé : pas de compte, pas de télémétrie.
 
-**Version 1.1.0** · GPL-3.0-or-later · © 2026 Mr-Aurevo-X
+**Version 1.1.1** · GPL-3.0-or-later · © 2026 Mr-Aurevo-X
 
 > Dépôt **privé** : `Mr-Aurevo-X/Hub-Utilitaires-Linux`.  
 > Pas de canal public. Pas de Flatpak / tar.gz hors de ce dépôt.
@@ -20,7 +20,7 @@ Boîte d’outils locale Linux (GTK 4 + libadwaita). Recherche, lots, hash, imag
 bash LANCER.sh
 ```
 
-Release interne : tag `v1.1.0` sur ce dépôt (assets pour le propriétaire / collaborateurs).
+Release interne : tag `v1.1.1` sur ce dépôt (assets pour le propriétaire / collaborateurs).
 
 ### Fonctions
 
@@ -43,7 +43,7 @@ Licence et mentions : [LEGAL.md](LEGAL.md) · [LICENSE](LICENSE)
 
 Local Linux toolkit (GTK 4 + libadwaita). Search, batch jobs, hash, images, PDF, disk map, workshop (text, encode, passwords). Nothing is uploaded: no account, no telemetry.
 
-**Version 1.1.0** · GPL-3.0-or-later · © 2026 Mr-Aurevo-X
+**Version 1.1.1** · GPL-3.0-or-later · © 2026 Mr-Aurevo-X
 
 > **Private** repo: `Mr-Aurevo-X/Hub-Utilitaires-Linux`.  
 > No public channel. No Flatpak / tarball outside this repo.
@@ -54,7 +54,7 @@ Local Linux toolkit (GTK 4 + libadwaita). Search, batch jobs, hash, images, PDF,
 bash LANCER.sh
 ```
 
-Internal release: tag `v1.1.0` on this repo (assets for the owner / collaborators).
+Internal release: tag `v1.1.1` on this repo (assets for the owner / collaborators).
 
 ### Features
 
