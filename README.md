@@ -1,7 +1,7 @@
 # Hub Utilitaires
 
-> **WIP** — encore en développement. Pas une release publique.  
-> **WIP** — still in development. Not a public release.
+> **WIP** — encore en développement.  
+> **WIP** — still in development.
 
 Boîte d’outils locale Linux (GTK 4 + libadwaita). Recherche, lots, hash, images, PDF, carte disque, atelier (texte, encode, mots de passe). Rien n’est envoyé : pas de compte, pas de télémétrie.
 
