@@ -79,6 +79,8 @@ class FilePage:
                 common.button_row(i18n.t("file_split"), self._split),
                 common.button_row(i18n.t("file_join"), self._join),
                 common.button_row(i18n.t("file_copy"), self._copy),
+                common.button_row(i18n.t("file_symlink"), self._symlink),
+                common.button_row(i18n.t("file_relink"), self._relink),
             ],
         )
         box.append(inspect)
@@ -241,6 +243,36 @@ class FilePage:
             "joined.bin",
             lambda dest: self._bg(lambda: str(fileutil.join_files(parts, dest)), self._out),
         )
+
+    def _symlink(self, *_args: object) -> None:
+        path = self._need()
+        if path is None:
+            return
+        compat.save_file(
+            self._window,
+            f"{path.name}.link",
+            lambda dest: self._bg(lambda: str(fileutil.create_symlink(path, dest)), self._out),
+        )
+
+    def _relink(self, *_args: object) -> None:
+        path = self._need()
+        if path is None:
+            return
+        if not path.is_symlink():
+            show_toast(self._toast, i18n.t("file_relink"), 4)
+            return
+
+        def on_paths(paths: list[Path]) -> None:
+            if not paths:
+                return
+            try:
+                fileutil.relink_symlink(path, paths[0])
+            except fileutil.FileUtilError as exc:
+                show_toast(self._toast, str(exc), 6)
+                return
+            show_toast(self._toast, "OK")
+
+        compat.open_files(self._window, on_paths)
 
     def _copy(self, *_args: object) -> None:
         path = self._need()

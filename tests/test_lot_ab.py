@@ -3,10 +3,11 @@ from __future__ import annotations
 
 from datetime import datetime
 from pathlib import Path
+from threading import Event
 
 import pytest
 
-from core import batchutil, codec, fileutil, hashutil, pdfutil, rename, resize, snippets, textutil
+from core import batchutil, codec, fileutil, find as find_core, hashutil, pdfutil, rename, resize, snippets, textutil
 from core import secretscan
 
 
@@ -233,3 +234,63 @@ def test_pdf_inventory_ok_and_error_row(tmp_path: Path) -> None:
     assert lines[0] == "path,pages,bytes,encrypted,title"
     assert any(line.startswith(str(ok)) and ",1," in line and "Inv" in line for line in lines[1:])
     assert any(line.startswith(str(bad)) and ",ERROR," in line for line in lines[1:])
+
+
+def test_empty_files_skips_nonzero(tmp_path: Path) -> None:
+    empty = tmp_path / "zero.txt"
+    nonempty = tmp_path / "data.txt"
+    empty.write_bytes(b"")
+    nonempty.write_text("x", encoding="utf-8")
+    hits = batchutil.empty_files(tmp_path)
+    assert empty in hits.paths
+    assert nonempty not in hits.paths
+
+
+def test_scan_cancel_before_walk_is_truncated(tmp_path: Path) -> None:
+    (tmp_path / "a.txt").write_text("a", encoding="utf-8")
+    cancel = Event()
+    cancel.set()
+    hits = batchutil.older_than(tmp_path, 0, cancel=cancel)
+    assert hits.truncated
+    assert hits.paths == []
+
+
+def test_replace_regex_preview_and_apply(tmp_path: Path) -> None:
+    src = tmp_path / "n.txt"
+    src.write_text("foo1 foo2\n", encoding="utf-8")
+    rows = find_core.replace_preview([src], r"foo\d", "x", regex=True)
+    assert rows == [(src, 2)]
+    done = find_core.replace_apply([src], r"foo\d", "x", regex=True, overwrite=True)
+    assert done == [src]
+    assert src.read_text(encoding="utf-8") == "x x\n"
+
+
+def test_replace_invalid_regex_raises(tmp_path: Path) -> None:
+    src = tmp_path / "n.txt"
+    src.write_text("abc", encoding="utf-8")
+    with pytest.raises(find_core.FindError):
+        find_core.replace_preview([src], "(", "x", regex=True)
+
+
+def test_create_symlink_and_refuse_existing(tmp_path: Path) -> None:
+    target = tmp_path / "real.txt"
+    dest = tmp_path / "alias.txt"
+    target.write_text("ok", encoding="utf-8")
+    link = fileutil.create_symlink(target, dest)
+    assert link.is_symlink()
+    assert link.read_text(encoding="utf-8") == "ok"
+    with pytest.raises(fileutil.FileUtilError):
+        fileutil.create_symlink(target, dest)
+
+
+def test_relink_symlink_updates_target(tmp_path: Path) -> None:
+    old = tmp_path / "old.txt"
+    new = tmp_path / "new.txt"
+    link = tmp_path / "link"
+    old.write_text("old", encoding="utf-8")
+    new.write_text("new", encoding="utf-8")
+    link.symlink_to(old)
+    fileutil.relink_symlink(link, new)
+    assert link.is_symlink()
+    assert link.resolve() == new.resolve()
+    assert link.read_text(encoding="utf-8") == "new"

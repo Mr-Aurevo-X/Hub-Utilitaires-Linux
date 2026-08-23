@@ -218,6 +218,23 @@ def touch_mtime(path: Path) -> Path:
     return path
 
 
+def create_symlink(target: Path, dest: Path) -> Path:
+    if dest.is_symlink() or (dest.exists() and not (dest.is_file() and dest.stat().st_size == 0)):
+        raise FileUtilError(f"existe déjà : {dest}")
+    if dest.exists():
+        dest.unlink()
+    dest.symlink_to(target)
+    return dest
+
+
+def relink_symlink(link: Path, new_target: Path) -> Path:
+    if not link.is_symlink():
+        raise FileUtilError("pas un lien symbolique")
+    link.unlink()
+    link.symlink_to(new_target)
+    return link
+
+
 def rewrite_text(path: Path, dest: Path, *, mode: str) -> Path:
     key = (mode or "").lower()
     try:

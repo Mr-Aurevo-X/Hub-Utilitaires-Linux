@@ -16,6 +16,7 @@ class PdfPage:
         self._window = window
         self._toast = toast
         self._files: list[Path] = []
+        self._inventory_csv = ""
         self.widget = self._build()
 
     def receive_paths(self, paths: list[Path]) -> None:
@@ -67,6 +68,7 @@ class PdfPage:
                 common.button_row(i18n.t("pdf_reorder"), self._reorder_pages),
                 common.button_row(i18n.t("pdf_extract_images"), self._extract_images),
                 common.button_row(i18n.t("pdf_inventory"), self._inventory),
+                common.button_row(i18n.t("pdf_inventory_save"), self._inventory_save),
             ],
         )
         security = common.prefs_group(
@@ -229,13 +231,10 @@ class PdfPage:
                     show_toast(self._toast, str(error), 6)
                     return
                 text = str(result)
+                self._inventory_csv = text
                 preview = text if len(text) <= 400 else text[:400] + "…"
                 self._info.set_text(preview)
-                compat.save_file(
-                    self._window,
-                    "pdf-inventory.csv",
-                    lambda dest: dest.write_text(text, encoding="utf-8"),
-                )
+                show_toast(self._toast, "OK")
 
             run_in_thread(work, done)
 
@@ -243,6 +242,17 @@ class PdfPage:
             run(files)
             return
         compat.select_folder(self._window, lambda folder: run(pdfutil.list_pdfs(folder)))
+
+    def _inventory_save(self, *_args: object) -> None:
+        text = self._inventory_csv
+        if not text.strip():
+            show_toast(self._toast, i18n.t("pdf_inventory"), 4)
+            return
+        compat.save_file(
+            self._window,
+            "pdf-inventory.csv",
+            lambda dest: dest.write_text(text, encoding="utf-8"),
+        )
 
     def _show_info(self, *_args: object) -> None:
         if not self._files:

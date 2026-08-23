@@ -39,6 +39,10 @@ Préférences = dialogue chrome (`Ctrl+,`), pas une entrée sidebar.
 | Broken **symlinks** + TrashPeek + stats + dupes | Lots |
 | Broken **doc links** locaux (MD/HTML, pas HTTP) | Lots → Plus |
 | Quasi-doublons images (W×H×octets) | Lots → Plus |
+| Fichiers vides (0 o) + annuler scan | Lots |
+| Envoi Lots → Renommer / Hash / Images / PDF / Fichier | Lots |
+| Remplacer regex + confirm | Recherche |
+| Lien symbolique créer / relier | Fichier → Inspect |
 | MimeGuess (magic bytes) | Fichier → Inspect |
 | Dossiers récents / favoris + recherches épinglées | FolderBar / Recherche |
 | Journal opérations | `core/opslog.py` + Préférences |

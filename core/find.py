@@ -297,17 +297,33 @@ def list_files(root: Path, *, limit: int = 400, include_hidden: bool = False) ->
     return PathHits(hits, False, limit)
 
 
-def replace_preview(paths: list[Path], needle: str, replacement: str) -> list[tuple[Path, int]]:
+def _replace_needle(needle: str, *, regex: bool) -> tuple[re.Pattern[str] | None, str]:
     text = needle or ""
     if not text:
         raise FindError("texte à remplacer vide")
+    if not regex:
+        return None, text
+    try:
+        return re.compile(text), text
+    except re.error as exc:
+        raise FindError(f"regex invalide : {exc}") from exc
+
+
+def replace_preview(
+    paths: list[Path],
+    needle: str,
+    replacement: str,
+    *,
+    regex: bool = False,
+) -> list[tuple[Path, int]]:
+    compiled, text = _replace_needle(needle, regex=regex)
     rows: list[tuple[Path, int]] = []
     for path in paths:
         try:
             data = path.read_text(encoding="utf-8")
         except (OSError, UnicodeDecodeError):
             continue
-        count = data.count(text)
+        count = len(compiled.findall(data)) if compiled is not None else data.count(text)
         if count:
             rows.append((path, count))
     return rows
@@ -319,20 +335,25 @@ def replace_apply(
     replacement: str,
     *,
     overwrite: bool = False,
+    regex: bool = False,
 ) -> list[Path]:
-    text = needle or ""
-    if not text:
-        raise FindError("texte à remplacer vide")
+    compiled, text = _replace_needle(needle, regex=regex)
     done: list[Path] = []
     for path in paths:
         try:
             data = path.read_text(encoding="utf-8")
         except (OSError, UnicodeDecodeError) as exc:
             raise FindError(f"lecture impossible : {path}") from exc
-        if text not in data:
-            continue
+        if compiled is not None:
+            new = compiled.sub(replacement, data)
+            if new == data:
+                continue
+        else:
+            if text not in data:
+                continue
+            new = data.replace(text, replacement)
         dest = path if overwrite else path.with_name(f"{path.stem}_kit{path.suffix}")
-        dest.write_text(data.replace(text, replacement), encoding="utf-8")
+        dest.write_text(new, encoding="utf-8")
         done.append(dest)
     return done
 

@@ -84,9 +84,16 @@ def test_polish_ui_hooks_present() -> None:
     assert "broken_doc_links" in lots_src
     assert "eol_audit_text" in lots_src
     assert "near_duplicate_images" in lots_src
+    assert "empty_files" in lots_src
+    assert "_do_cancel" in lots_src
+    assert "on_send" in lots_src
     assert "set_draw_func" in disk_src
     assert "treemap_rects" in disk_src
     file_src = (root / "ui" / "pages" / "file_page.py").read_text(encoding="utf-8")
     pdf_src = (root / "ui" / "pages" / "pdf_page.py").read_text(encoding="utf-8")
     assert "diff_archive_members" in file_src
+    assert "create_symlink" in file_src
     assert "pdfutil.inventory" in pdf_src
+    assert "save_file" not in pdf_src.split("def _inventory")[1].split("def _")[0]
+    assert "present_alert" in find_src
+    assert "regex=regex" in find_src

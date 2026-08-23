@@ -122,6 +122,7 @@ class FindPage:
         self._needle = Gtk.Entry(placeholder_text=i18n.t("find_replace"))
         self._repl = Gtk.Entry(placeholder_text=i18n.t("find_replace_with"))
         self._overwrite = Gtk.CheckButton(label=i18n.t("overwrite"))
+        self._regex = Gtk.CheckButton(label=i18n.t("find_replace_regex"))
         preview = Gtk.Button(label=i18n.t("rename_preview"))
         preview.connect("clicked", lambda *_: self._replace(preview_only=True))
         apply_btn = Gtk.Button(label=i18n.t("find_replace_go"))
@@ -130,6 +131,7 @@ class FindPage:
         repl_box.append(self._needle)
         repl_box.append(self._repl)
         repl_box.append(self._overwrite)
+        repl_box.append(self._regex)
         repl_actions = Gtk.Box(spacing=8)
         repl_actions.append(preview)
         repl_actions.append(apply_btn)
@@ -218,12 +220,13 @@ class FindPage:
         needle = self._needle.get_text()
         repl = self._repl.get_text()
         overwrite = self._overwrite.get_active()
+        regex = self._regex.get_active()
 
         def work() -> str:
-            rows = find_core.replace_preview(paths, needle, repl)
+            rows = find_core.replace_preview(paths, needle, repl, regex=regex)
             if preview_only:
                 return "\n".join(f"{path} ×{count}" for path, count in rows) or i18n.t("find_empty")
-            done = find_core.replace_apply(paths, needle, repl, overwrite=overwrite)
+            done = find_core.replace_apply(paths, needle, repl, overwrite=overwrite, regex=regex)
             return f"{len(done)} OK"
 
         def done(result: Any, error: BaseException | None) -> None:
@@ -235,7 +238,23 @@ class FindPage:
                 return
             show_toast(self._toast, str(result))
 
-        run_in_thread(work, done)
+        if preview_only:
+            run_in_thread(work, done)
+            return
+
+        def on_resp(response: str) -> None:
+            if response != "now":
+                return
+            run_in_thread(work, done)
+
+        compat.present_alert(
+            self._window,
+            i18n.t("find_replace_confirm"),
+            i18n.t("find_replace_body"),
+            [("cancel", i18n.t("cancel")), ("now", i18n.t("confirm"))],
+            suggested="now",
+            on_response=on_resp,
+        )
 
     def _export(self) -> None:
         text = find_core.export_paths(self._files, csv_mode=True)

@@ -239,7 +239,7 @@ class MainWindow(Adw.ApplicationWindow):
         if key == "file":
             return FilePage(self, self._toast)
         if key == "lots":
-            return LotsPage(self, self._toast, self._settings)
+            return LotsPage(self, self._toast, self._settings, on_send=self.send_paths)
         if key == "disk":
             return DiskPage(self, self._toast, self._settings)
         raise KeyError(key)

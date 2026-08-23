@@ -1,5 +1,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
+from collections.abc import Callable
 from pathlib import Path
+from threading import Event
 from typing import Any
 
 from gi.repository import GLib, Gtk
@@ -7,17 +9,29 @@ from gi.repository import GLib, Gtk
 from core import batchutil
 from core import find as find_core
 from core import i18n
+from core.workset import SendTarget
 from ui import compat
 from ui.helpers import run_in_thread, show_toast
 from ui.pages import common
 from ui.pages.folder_bar import FolderBar
 
+SendFn = Callable[[SendTarget, list[Path]], None]
+
 
 class LotsPage:
-    def __init__(self, window: Gtk.Window, toast: Gtk.Widget, settings: dict[str, Any]) -> None:
+    def __init__(
+        self,
+        window: Gtk.Window,
+        toast: Gtk.Widget,
+        settings: dict[str, Any],
+        *,
+        on_send: SendFn | None = None,
+    ) -> None:
         self._window = window
         self._toast = toast
         self._settings = settings
+        self._on_send = on_send
+        self._cancel: Event | None = None
         self._paths: list[Path] = []
         self._groups: list[list[Path]] = []
         self._group_checks: list[Gtk.CheckButton] = []
@@ -30,7 +44,32 @@ class LotsPage:
 
     def receive_paths(self, paths: list[Path]) -> None:
         self._selection = list(paths)
-        self._bg(lambda: batchutil.sha256_duplicates_paths(list(paths)), groups=True)
+        ev = self._fresh_cancel()
+        self._bg(lambda: batchutil.sha256_duplicates_paths(list(paths), cancel=ev), groups=True)
+
+    def _fresh_cancel(self) -> Event:
+        ev = Event()
+        self._cancel = ev
+        return ev
+
+    def _do_cancel(self) -> None:
+        if self._cancel is not None:
+            self._cancel.set()
+
+    def _send(self, target: SendTarget) -> None:
+        if self._groups and self._group_checks:
+            paths = [
+                path
+                for group, check in zip(self._groups, self._group_checks)
+                if check.get_active()
+                for path in group
+            ]
+        else:
+            paths = list(self._paths)
+        if not paths or self._on_send is None:
+            show_toast(self._toast, i18n.t("find_empty"), 4)
+            return
+        self._on_send(target, paths)
 
     def _build(self) -> Gtk.Widget:
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=8)
@@ -49,6 +88,9 @@ class LotsPage:
         self._progress = Gtk.ProgressBar()
         self._progress.set_show_text(True)
         box.append(self._progress)
+        cancel = Gtk.Button(label=i18n.t("disk_cancel"))
+        cancel.connect("clicked", lambda *_: self._do_cancel())
+        box.append(cancel)
         scan = common.prefs_group(
             i18n.t("group_actions"),
             [
@@ -68,6 +110,7 @@ class LotsPage:
                 common.button_row(i18n.t("lots_doc_links"), self._doc_links),
                 common.button_row(i18n.t("lots_eol"), self._eol),
                 common.button_row(i18n.t("lots_near_images"), self._near_images),
+                common.button_row(i18n.t("lots_empty_files"), self._empty_files),
             ],
         )
         extra = Gtk.Expander(label=i18n.t("group_more"))
@@ -88,6 +131,18 @@ class LotsPage:
         self._list = Gtk.ListBox()
         self._list.add_css_class("boxed-list")
         box.append(self._list)
+        send = Gtk.Box(spacing=8)
+        for target, key in (
+            ("rename", "send_rename"),
+            ("hash", "send_hash"),
+            ("resize", "send_images"),
+            ("pdf", "send_pdf"),
+            ("file", "send_file"),
+        ):
+            btn = Gtk.Button(label=i18n.t(key))
+            btn.connect("clicked", lambda *_a, dest=target: self._send(dest))
+            send.append(btn)
+        box.append(send)
         self._out = Gtk.TextView()
         self._out.set_editable(False)
         self._out.set_wrap_mode(Gtk.WrapMode.WORD_CHAR)
@@ -164,19 +219,27 @@ class LotsPage:
         self._out.get_buffer().set_text("")
 
     def _dupes(self, *_args: object) -> None:
+        ev = self._fresh_cancel()
         if self._selection:
             paths = list(self._selection)
-            self._bg(lambda: batchutil.sha256_duplicates_paths(paths, on_progress=self._progress_cb), groups=True)
+            self._bg(
+                lambda: batchutil.sha256_duplicates_paths(paths, on_progress=self._progress_cb, cancel=ev),
+                groups=True,
+            )
             return
         root = self._root_path()
-        self._bg(lambda: batchutil.sha256_duplicates(root, on_progress=self._progress_cb), groups=True)
+        self._bg(
+            lambda: batchutil.sha256_duplicates(root, on_progress=self._progress_cb, cancel=ev),
+            groups=True,
+        )
 
     def _progress_cb(self, done: int, total: int) -> None:
         GLib.idle_add(lambda: self._set_progress(done, total) or False)
 
     def _names(self, *_args: object) -> None:
         root = self._root_path()
-        self._bg(lambda: batchutil.same_names(root), groups=True)
+        ev = self._fresh_cancel()
+        self._bg(lambda: batchutil.same_names(root, cancel=ev), groups=True)
 
     def _empty(self, *_args: object) -> None:
         root = self._root_path()
@@ -185,22 +248,31 @@ class LotsPage:
     def _old(self, *_args: object) -> None:
         root = self._root_path()
         days = float(self._days.get_value())
-        self._bg(lambda: batchutil.older_than(root, days))
+        ev = self._fresh_cancel()
+        self._bg(lambda: batchutil.older_than(root, days, cancel=ev))
 
     def _large(self, *_args: object) -> None:
         root = self._root_path()
         mb = float(self._mb.get_value())
-        self._bg(lambda: batchutil.larger_than(root, mb))
+        ev = self._fresh_cancel()
+        self._bg(lambda: batchutil.larger_than(root, mb, cancel=ev))
 
     def _broken(self, *_args: object) -> None:
         root = self._root_path()
-        self._bg(lambda: batchutil.broken_symlinks(root))
+        ev = self._fresh_cancel()
+        self._bg(lambda: batchutil.broken_symlinks(root, cancel=ev))
+
+    def _empty_files(self, *_args: object) -> None:
+        root = self._root_path()
+        ev = self._fresh_cancel()
+        self._bg(lambda: batchutil.empty_files(root, cancel=ev))
 
     def _doc_links(self, *_args: object) -> None:
         root = self._root_path()
+        ev = self._fresh_cancel()
 
         def work() -> tuple[Any, str]:
-            return batchutil.broken_doc_links(root), batchutil.broken_doc_links_text(root)
+            return batchutil.broken_doc_links(root, cancel=ev), batchutil.broken_doc_links_text(root, cancel=ev)
 
         def done(result: Any, error: BaseException | None) -> None:
             if error is not None:
@@ -216,11 +288,13 @@ class LotsPage:
 
     def _eol(self, *_args: object) -> None:
         root = self._root_path()
-        self._bg(lambda: batchutil.eol_audit_text(root))
+        ev = self._fresh_cancel()
+        self._bg(lambda: batchutil.eol_audit_text(root, cancel=ev))
 
     def _near_images(self, *_args: object) -> None:
         root = self._root_path()
-        self._bg(lambda: batchutil.near_duplicate_images(root), groups=True)
+        ev = self._fresh_cancel()
+        self._bg(lambda: batchutil.near_duplicate_images(root, cancel=ev), groups=True)
 
     def _trash(self, *_args: object) -> None:
         def work() -> str:
