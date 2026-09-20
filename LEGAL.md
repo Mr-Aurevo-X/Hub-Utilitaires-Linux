@@ -21,7 +21,7 @@ Mr-Aurevo-X **ne collecte aucune donnée personnelle**. Pas de compte, pas de t�
 - Stockage local : `~/.config/Mr-Aurevo-X/hubs/utilitaires/`
 - Les modules métier n’ouvrent **aucune** connexion réseau.
 - **Vérif. versions au démarrage** (Préférences, activée par défaut, désactivable) : GET `api.github.com/repos/Mr-Aurevo-X/Hub-Utilitaires-Linux/releases` (lecture seule). GitHub peut voir IP / User-Agent selon **sa** politique.
-- **Soutien optionnel :** Discord / PayPal / Revolut, sur clic. Aucune obligation ; pas de suivi par l’app.
+- **Soutien optionnel :** Discord / crypto (in-app), sur clic. Aucune obligation ; pas de suivi par l’app.
 
 Droit belge.
 
@@ -50,7 +50,7 @@ Mr-Aurevo-X **collects no personal data**. No account, no telemetry, no ads.
 - Local storage: `~/.config/Mr-Aurevo-X/hubs/utilitaires/`
 - Feature modules open **no** network connections.
 - **Startup version check** (Preferences, on by default, can be disabled): GET `api.github.com/repos/Mr-Aurevo-X/Hub-Utilitaires-Linux/releases` (read-only). GitHub may see IP / User-Agent under **its** policy.
-- **Optional support:** Discord / PayPal / Revolut on click. Not required; the app does not track donations.
+- **Optional support:** Discord / crypto (in-app) on click. Not required; the app does not track donations.
 
 Belgian law.
 

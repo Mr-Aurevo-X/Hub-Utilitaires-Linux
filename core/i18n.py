@@ -39,11 +39,10 @@ _FR = {
     "don_heading": "Soutien volontaire",
     "don_body": (
         "Hub Utilitaires est gratuit (GPL-3.0-or-later). Aucun compte, aucune pub, aucune fonction verrouillée.\n\n"
-        "Un don via PayPal est **100 % optionnel** : il aide le temps de développement, "
-        "mais vous pouvez utiliser l’app sans jamais payer.\n\n"
-        "Le bouton ouvre PayPal dans votre navigateur. Hub Utilitaires ne suit pas les dons."
+        "Soutien **100 % optionnel** : Discord ou adresses crypto (copier-coller). "
+        "L’app ne suit pas les dons."
     ),
-    "don_open": "Ouvrir PayPal",
+    "don_open": "Ouvrir Discord",
     "don_later": "Plus tard",
     "update_close": "Fermer",
     "language": "Langue",
@@ -452,11 +451,10 @@ _EN = {
     "don_heading": "Voluntary support",
     "don_body": (
         "Hub Utilitaires is free (GPL-3.0-or-later). No account, no ads, no locked features.\n\n"
-        "A PayPal donation is **fully optional** — it helps development time, "
-        "but you can use the app without ever paying.\n\n"
-        "The button opens PayPal in your browser. Hub Utilitaires does not track donations."
+        "Support is **fully optional**: Discord or crypto addresses (copy-paste). "
+        "The app does not track donations."
     ),
-    "don_open": "Open PayPal",
+    "don_open": "Open Discord",
     "don_later": "Later",
     "update_close": "Close",
     "language": "Language",
