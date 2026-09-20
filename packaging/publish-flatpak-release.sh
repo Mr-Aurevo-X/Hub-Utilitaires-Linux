@@ -34,7 +34,7 @@ if [[ -z "${VERSION}" ]]; then
   exit 1
 fi
 
-TAG="Hub-Utilitaires-v${VERSION}"
+TAG="v${VERSION}"
 TITLE="Hub Utilitaires ${VERSION}"
 LEGAL_NOTES=""
 if [[ -f "${ROOT}/packaging/public-legal-notes.md" ]]; then
