@@ -3,4 +3,4 @@
 
 from __future__ import annotations
 
-DONATION_URL = "https://www.paypal.com/paypalme/aurevo1"
+DONATION_URL = "https://discord.com/users/406891052516114442"
